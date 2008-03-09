@@ -33,27 +33,47 @@ Declare a class like this:
   use Moose;
 
   has 'username' => (
-      metaclass => 'MetaDescription::String',
-      is        => 'ro',
-      isa       => 'Str',
-      length    => {
-          min => 5,
-          max => 40,
+      metaclass  => 'MetaDescription',
+      is         => 'ro',
+      isa        => 'Str',
+      traits     => [
+          'MetaDescription::Validation',
+          'MetaDescription::HTML',
+      ],
+      html       => { type => 'text' },
+      validation => {
+          rules => {
+              'MetaDescription::Validation::Length' => {
+                  min => 1,
+                  max => 20,
+               },
+          },
       },
-   );
+  );
  
-  has 'pleasant_essay' => (
-      metaclass => 'MetaDescription::Text',
-      is        => 'ro',
-      isa       => 'Str',
-      size      => {
-          rows => 25,
-          cols => 80,
+  has 'biography' => (
+      metaclass  => 'MetaDescription',
+      is         => 'ro',
+      isa        => 'Str',
+      traits     => [
+          'MetaDescription::Validation',
+          'MetaDescription::HTML',
+          'MetaDescription::CSS',
+      ],
+      html       => { 
+          type => 'textarea', 
+          rows => 25, 
+          cols => 80
       },
-      validator => [qw/
-         NonZeroLength
-         NoProfanity::EN
-      /],
+      validation => {
+          rules => {
+              'MetaDescription::Validation::WordCount' => {
+                  min => 1,
+                  max => 400,
+               },
+              'MetaDescription::Validation::Profanity::EN' => {},
+          ],
+      },
   );
 
 Then introspect it:
