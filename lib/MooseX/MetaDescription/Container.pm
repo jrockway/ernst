@@ -1,12 +1,12 @@
 package MooseX::MetaDescription::Container;
 use Moose;
 use MooseX::AttributeHelpers;
+use MooseX::MetaDescription::Description;
 
 has 'class' => (
     isa      => 'MooseX::MetaDescription::Meta::Class',
     is       => 'ro',
     required => 1,
-    weak_ref => 1,
 );
 
 1;

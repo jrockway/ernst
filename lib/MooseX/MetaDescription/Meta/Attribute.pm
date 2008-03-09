@@ -6,7 +6,8 @@ extends 'Moose::Meta::Attribute';
 
 has 'metadescription' => (
     is       => 'ro',
-    does     => 'MooseX::MetaDescription::Description',
+    isa      => 'MooseX::MetaDescription::Description',
+    weak_ref => 1,
     required => 1,
     default  => sub {
         my $self = shift;
