@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Scalar::Util qw(refaddr);
-use Test::More tests => 6;
+use Test::More tests => 7;
 
 { package Foo;
   use MooseX::MetaDescription;
@@ -49,3 +49,6 @@ is_ref $foo_desc->class, $foo->meta, 'description class == metaclass';
 is_ref $foo_desc->attribute('an_attribute'),
        $an_attribute_desc, 
   'container -> attribute == attribute -> metadescription';
+
+is_deeply [keys %{$foo_desc->attributes}], ['an_attribute'],
+  'no extra descriptions';
