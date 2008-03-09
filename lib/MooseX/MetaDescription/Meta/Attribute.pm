@@ -1,5 +1,4 @@
 package MooseX::MetaDescription::Meta::Attribute;
-use feature ':5.10';
 use Moose;
 use MooseX::MetaDescription::Description;
 
