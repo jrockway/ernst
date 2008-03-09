@@ -16,3 +16,11 @@ has 'metadescription' => (
 );
 
 1;
+__END__
+
+=head1 NAME
+
+MooseX::MetaDescription::Meta::Class - the metaclass for classes with
+metadescriptions
+
+=head1 SYNOPSIS

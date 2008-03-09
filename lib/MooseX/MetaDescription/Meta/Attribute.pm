@@ -25,4 +25,3 @@ MooseX::MetaDescription::Meta::Attribute - the attribute metaclass for
 attributes with metadescriptions
 
 =head1 SYNOPSIS
-
