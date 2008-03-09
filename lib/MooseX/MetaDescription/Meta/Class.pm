@@ -7,8 +7,9 @@ extends 'Moose::Meta::Class';
 has 'metadescription' => (
     is       => 'ro',
     isa      => 'MooseX::MetaDescription::Container',
+    lazy     => 1,
     weak_ref => 1,
-    default => sub {
+    default  => sub {
         my $self = shift;
         MooseX::MetaDescription::Container->new( class => $self );
     },

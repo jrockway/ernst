@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Scalar::Util qw(refaddr);
-use Test::More tests => 4;
+use Test::More tests => 6;
 
 { package Foo;
   use MooseX::MetaDescription;
@@ -31,7 +31,7 @@ for('MooseX::MetaDescription::Meta::Attribute'){ # topicalizer.  <3
     isnt ref $foo->meta->get_attribute_map->{foo}, $_;
 }
 
-# make sure hierarchy makes sense:
+# TODO: make sure hierarchy makes sense:
 # 1 $foo->meta: << MX::MD::Meta::Class >>
 # 2   metadescription: << MX::MD::Container >>
 # 3     class [1]
@@ -43,3 +43,9 @@ for('MooseX::MetaDescription::Meta::Attribute'){ # topicalizer.  <3
 # 9        metadescription: [5]
 # 10    foo: << M::Meta::Attribute >>
 
+sub is_ref($$;$) { is refaddr $_[0], refaddr $_[1], $_[2] }
+
+is_ref $foo_desc->class, $foo->meta, 'description class == metaclass';
+is_ref $foo_desc->attribute('an_attribute'),
+       $an_attribute_desc, 
+  'container -> attribute == attribute -> metadescription';

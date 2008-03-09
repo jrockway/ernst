@@ -7,12 +7,12 @@ extends 'Moose::Meta::Attribute';
 has 'metadescription' => (
     is       => 'ro',
     isa      => 'MooseX::MetaDescription::Description',
+    lazy     => 1,
     weak_ref => 1,
-    required => 1,
     default  => sub {
         my $self = shift;
         MooseX::MetaDescription::Description->new( attribute => $self );
-    }
+    },
 );
 
 1;

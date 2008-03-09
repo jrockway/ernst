@@ -9,6 +9,28 @@ has 'class' => (
     required => 1,
 );
 
+has 'attributes' => (
+    metaclass => 'Collection::Hash',
+    isa       => 'HashRef[MooseX::MetaDescription::Description]',
+    is        => 'ro',
+    lazy      => 1,
+    default   => sub {
+        my $self = shift;
+        my %map = %{$self->class->get_attribute_map};
+        my @have_descriptions = 
+          grep { $map{$_}->isa('MooseX::MetaDescription::Meta::Attribute') } 
+            keys %map;
+        
+        my %result;
+        @result{@have_descriptions} = 
+          map { $_->metadescription } @map{@have_descriptions};
+        return \%result;
+    },
+    provides => {
+        get => 'attribute',
+    },
+);
+
 1;
 
 __END__
@@ -29,6 +51,6 @@ How to get a C<MooseX::MetaDescription::Container> for Some::Class:
 
 Returns the attribute metadescription class for the attribute C<$name>.
 
-=head2 get_attribute_map
+=head2 attributes
 
 Returns a hash mapping attribute names to attribute metadescription classes.
