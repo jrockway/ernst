@@ -30,6 +30,6 @@ How to get a C<MooseX::MetaDescription::Container> for Some::Class:
 
 Returns the attribute metadescription class for the attribute C<$name>.
 
-=head2 attribute_map
+=head2 get_attribute_map
 
 Returns a hash mapping attribute names to attribute metadescription classes.

@@ -59,7 +59,7 @@ Declare a class like this:
 Then introspect it:
 
   my $essay_description =
-      User::Profile->meta->attribute_map->{pleasant_essay}->metadescription;
+      User::Profile->meta->get_attribute_map->{pleasant_essay}->metadescription;
 
   my $class_description = User::Profile->meta->metadescription;
   my $essay_description = $class_description->metadescription_for('pleasant_essay');
