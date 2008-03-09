@@ -65,6 +65,7 @@ Declare a class like this:
           rows => 25, 
           cols => 80
       },
+      css        => { class => 'rich_textarea' },
       validation => {
           rules => {
               'MetaDescription::Validation::WordCount' => {
