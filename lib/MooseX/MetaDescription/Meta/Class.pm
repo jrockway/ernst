@@ -1,6 +1,6 @@
 package MooseX::MetaDescription::Meta::Class;
 use Moose;
-use MooseX::MetaDescription::Container;
+use MooseX::MetaDescription::Container::Moose;
 
 extends 'Moose::Meta::Class';
 
@@ -11,7 +11,7 @@ has 'metadescription' => (
     weak_ref => 1,
     default  => sub {
         my $self = shift;
-        MooseX::MetaDescription::Container->new( class => $self );
+        MooseX::MetaDescription::Container::Moose->new( class => $self );
     },
 );
 
