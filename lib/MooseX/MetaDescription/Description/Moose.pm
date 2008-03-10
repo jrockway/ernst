@@ -26,6 +26,14 @@ has '+type' => (
     default => sub { shift->attribute->description->{type} },
 );
 
+has '+is_writable' => (
+    default => sub { shift->attribute->has_writer ? 1 : 0 },
+);
+
+has '+traits' => (
+    default => sub { shift->attribute->description->{traits} || [] },
+);
+
 1;
 
 __END__
@@ -38,7 +46,7 @@ MooseX::MetaDescription::Description of a Moose class's attribute
 =head1 SYNOPSIS
 
   my $description = MooseX::MetaDescription::Description::Moose->new(
-     attribute => Some::Class->meta->get_attribute_map->{attribute},
+     attribute => Some::Class->meta->get_attribute('attribute'),
   );
 
 =head1 METHODS
