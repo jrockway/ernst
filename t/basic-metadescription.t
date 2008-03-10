@@ -8,14 +8,16 @@ use Test::More tests => 7;
   use Moose;
   
   has 'an_attribute' => (
-      metaclass => 'MetaDescription',
-      is        => 'ro',
-      isa       => 'Str',
-      type      => 'String',
+      metaclass   => 'MetaDescription',
+      is          => 'ro',
+      isa         => 'Str',
+      description => {
+          type => 'String',
+      },
   );
-
+  
   has 'foo' => ( is => 'ro' );
-      
+  
 }
 
 my $foo = Foo->new(an_attribute => 'hello, world');
