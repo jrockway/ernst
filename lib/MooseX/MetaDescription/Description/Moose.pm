@@ -9,6 +9,23 @@ has 'attribute' => (
     required => 1,
 );
 
+has 'users_description' => (
+    is      => 'ro',
+    isa     => 'HashRef',
+    default => sub {
+        my $self = shift;
+        $self->attribute->description;
+    },
+);
+
+has '+name' => (
+    default => sub { shift->attribute->name },
+);
+
+has '+type' => (
+    default => sub { shift->attribute->description->{type} },
+);
+
 1;
 
 __END__
@@ -21,7 +38,7 @@ MooseX::MetaDescription::Description of a Moose class's attribute
 =head1 SYNOPSIS
 
   my $description = MooseX::MetaDescription::Description::Moose->new(
-     attribute => Some::Class->get_attribute_map->{attribute},
+     attribute => Some::Class->meta->get_attribute_map->{attribute},
   );
 
 =head1 METHODS
@@ -31,5 +48,3 @@ See the inherited methods from L<MooseX::MetaDescription::Description>.
 =head2 attribute
 
 Returns the attribute metaclass that this instance was created from.
-
-

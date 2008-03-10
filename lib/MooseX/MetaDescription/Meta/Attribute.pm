@@ -11,8 +11,18 @@ has 'metadescription' => (
     weak_ref => 1,
     default  => sub {
         my $self = shift;
-        MooseX::MetaDescription::Description::Moose->new( attribute => $self );
+        MooseX::MetaDescription::Description::Moose->new(
+            attribute => $self,
+        );
     },
+);
+
+# the user's description definition, don't introspect this; look
+# at the metadescription object instead
+has 'description' => (
+    is       => 'ro',
+    isa      => 'HashRef',
+    required => 1,
 );
 
 1;
