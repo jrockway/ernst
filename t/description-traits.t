@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 10;
+use Test::More tests => 12;
 
 { package MooseX::MetaDescription::Description::Trait::DoesThisWork;
   use Moose::Role;
@@ -34,7 +34,7 @@ use Test::More tests => 10;
   );
   
   has 'attribute'  => @def;
-  has 'attribute2' => @def;
+  has 'attribute2' => (@def, is => 'ro');
   
   has 'attribute3' => (
       @def,
@@ -72,3 +72,7 @@ is ref $container->attribute('attribute'),
 is ref $container->attribute('attribute3'),
    'MooseX::MetaDescription::Description::Moose',
   'attribute3 has the plain type, since it has no traits';
+
+# check read-only-ness
+ok $container->attribute('attribute')->is_writable;
+ok !$container->attribute('attribute2')->is_writable;

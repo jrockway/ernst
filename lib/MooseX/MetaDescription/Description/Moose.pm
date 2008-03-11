@@ -18,7 +18,10 @@ has '+type' => (
 );
 
 has '+is_writable' => (
-    default => sub { shift->attribute->has_writer ? 1 : 0 },
+    default => sub { 
+        my $a = shift->attribute;
+        ($a->has_writer || $a->has_accessor) ? 1 : 0;
+    },
 );
 
 1;
