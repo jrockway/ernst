@@ -5,17 +5,8 @@ extends 'MooseX::MetaDescription::Description';
 
 has 'attribute' => (
     is       => 'ro',
-    isa      => 'MooseX::MetaDescription::Meta::Attribute',
+    does     => 'MooseX::MetaDescription::Meta::Attribute',
     required => 1,
-);
-
-has 'users_description' => (
-    is      => 'ro',
-    isa     => 'HashRef',
-    default => sub {
-        my $self = shift;
-        $self->attribute->description;
-    },
 );
 
 has '+name' => (
@@ -28,10 +19,6 @@ has '+type' => (
 
 has '+is_writable' => (
     default => sub { shift->attribute->has_writer ? 1 : 0 },
-);
-
-has '+traits' => (
-    default => sub { shift->attribute->description->{traits} || [] },
 );
 
 1;

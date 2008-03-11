@@ -1,14 +1,14 @@
 use strict;
 use warnings;
 use Scalar::Util qw(refaddr);
-use Test::More tests => 7;
+use Test::More tests => 10;
 
 { package Foo;
   use MooseX::MetaDescription;
   use Moose;
   
   has 'an_attribute' => (
-      metaclass   => 'MetaDescription',
+      traits      => ['MetaDescription'],
       is          => 'ro',
       isa         => 'Str',
       description => {
@@ -21,17 +21,13 @@ use Test::More tests => 7;
 }
 
 my $foo = Foo->new(an_attribute => 'hello, world');
-my $foo_desc = $foo->meta->metadescription;
-my $an_attribute_desc = $foo->meta->get_attribute_map->{an_attribute}->metadescription;
+isa_ok $foo, 'Foo', '$foo';
+isa_ok $foo->meta, 'MooseX::MetaDescription::Meta::Class', q{$foo's metaclass};
 
-# make sure classes make sense
-
-isa_ok $foo_desc, 'MooseX::MetaDescription::Container';
-isa_ok $an_attribute_desc, 'MooseX::MetaDescription::Description';
-for('MooseX::MetaDescription::Meta::Attribute'){ # topicalizer.  <3
-    is   ref $foo->meta->get_attribute_map->{an_attribute}, $_;
-    isnt ref $foo->meta->get_attribute_map->{foo}, $_;
-}
+ok $foo->meta->get_attribute('an_attribute')->can('metadescription'),
+  'an_attribute can metadescription';
+ok !$foo->meta->get_attribute('foo')->can('metadescription'),
+  'foo cannot metadescription';
 
 # TODO: make sure hierarchy makes sense:
 # 1 $foo->meta: << MX::MD::Meta::Class >>
@@ -45,11 +41,21 @@ for('MooseX::MetaDescription::Meta::Attribute'){ # topicalizer.  <3
 # 9        metadescription: [5]
 # 10    foo: << M::Meta::Attribute >>
 
-sub is_ref($$;$) { is refaddr $_[0], refaddr $_[1], $_[2] }
+sub is_ref($$;$) { is(refaddr($_[0]), refaddr($_[1]), $_[2]) }
+my $foo_desc = $foo->meta->metadescription;
+my $an_attribute_desc = $foo->meta->get_attribute('an_attribute')->metadescription;
+isa_ok $foo_desc, 'MooseX::MetaDescription::Container';
+isa_ok $an_attribute_desc, 'MooseX::MetaDescription::Description';
+
+my $an_attribute = $foo->meta->get_attribute('an_attribute');
+is_deeply $an_attribute->{description}, { type => 'String' },
+  'raw description is in attribute';
 
 is_ref $foo_desc->class, $foo->meta, 'description class == metaclass';
-is_ref $foo_desc->attribute('an_attribute'),
-       $an_attribute_desc, 
+
+is_ref 
+  $foo_desc->attribute('an_attribute'), 
+  $foo->meta->get_attribute('an_attribute')->metadescription,
   'container -> attribute == attribute -> metadescription';
 
 is_deeply [keys %{$foo_desc->attributes}], ['an_attribute'],

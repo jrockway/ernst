@@ -2,6 +2,7 @@ package MooseX::MetaDescription::Container::Moose;
 use Moose;
 use MooseX::AttributeHelpers;
 use MooseX::MetaDescription::Description;
+use Moose::Util qw(does_role);
 
 extends 'MooseX::MetaDescription::Container';
 
@@ -16,9 +17,11 @@ has '+attributes' => (
     default => sub {
         my $self = shift;
         my %map = %{$self->class->get_attribute_map};
-        my @have_descriptions = 
-          grep { $map{$_}->isa('MooseX::MetaDescription::Meta::Attribute') } 
-            keys %map;
+        my @have_descriptions = grep { 
+            # XXX: does_role seems to not work here; checking "can" instead
+            # which is rather flaky
+            $map{$_}->can('metadescription')
+        } keys %map;
         
         my %result;
         @result{@have_descriptions} = 

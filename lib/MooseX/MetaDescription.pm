@@ -13,7 +13,7 @@ sub import {
     );
 }
 
-package Moose::Meta::Attribute::Custom::MetaDescription;
+package Moose::Meta::Attribute::Custom::Trait::MetaDescription;
 sub register_implementation { 'MooseX::MetaDescription::Meta::Attribute' }
 
 1;

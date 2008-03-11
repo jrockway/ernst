@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 7;
+use Test::More tests => 8;
 
 { package MooseX::MetaDescription::Description::Trait::DoesThisWork;
   use Moose::Role;
@@ -23,7 +23,7 @@ use Test::More tests => 7;
   use Moose;
   
   has 'attribute' => (
-      metaclass   => 'MetaDescription',
+      traits      => ['MetaDescription'],
       is          => 'rw',
       isa         => 'Str',
       description => {
