@@ -13,7 +13,6 @@ coerce 'MooseX::MetaDescription::Type'
       $class->new;
   };
 
-
 1;
 
 __END__
