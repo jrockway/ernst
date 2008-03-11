@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 8;
+use Test::More tests => 10;
 
 { package MooseX::MetaDescription::Description::Trait::DoesThisWork;
   use Moose::Role;
@@ -21,8 +21,8 @@ use Test::More tests => 8;
 { package Class;
   use MooseX::MetaDescription;
   use Moose;
-  
-  has 'attribute' => (
+
+  my @def = (
       traits      => ['MetaDescription'],
       is          => 'rw',
       isa         => 'Str',
@@ -32,6 +32,17 @@ use Test::More tests => 8;
           some_configurable_argument => 'amazingly this works',
       },
   );
+  
+  has 'attribute'  => @def;
+  has 'attribute2' => @def;
+  
+  has 'attribute3' => (
+      @def,
+      description => {
+          type => 'String',
+      },
+  );
+  
 }
 
 my $foo = Class->new( attribute => 'Hello' );
@@ -52,3 +63,12 @@ ok $desc->does('MooseX::MetaDescription::Description::Trait::DoesThisWork'),
 is $desc->did_it_work, '1', 'did_it_work is true!';
 is $desc->some_configurable_argument, 'amazingly this works',
   q{the trait's BUILD works};
+
+# make sure attribute and attribute2 have the same description class
+is ref $container->attribute('attribute'),
+   ref $container->attribute('attribute2'),
+  'attribute and attribute2 have the same type (due to same traits)';
+
+is ref $container->attribute('attribute3'),
+   'MooseX::MetaDescription::Description::Moose',
+  'attribute3 has the plain type, since it has no traits';
