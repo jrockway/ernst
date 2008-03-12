@@ -11,25 +11,12 @@ has 'metadescription' => (
     weak_ref => 1,
     default  => sub {
         my $self = shift;
-        
-        my @traits = 
-          map {
-              my $trait_class;
-              if(/^[+](.+)$/){
-                  $trait_class = $1;
-              }
-              else {
-                  $trait_class = 
-                    qq{MooseX::MetaDescription::Description::Trait::$_};
-              }
-              
-              Class::MOP::load_class($trait_class);
-              $trait_class;
-          } @{$self->description->{traits}||[]};
+
+        my @traits = $self->trait_classes;
 
         my $base = 'MooseX::MetaDescription::Description::Moose';
         my @args = ( attribute => $self, %{$self->description} );
-        
+
         if(@traits){
             my $class = Moose::Meta::Class->create_anon_class(
                 superclasses => [$base],
@@ -43,12 +30,35 @@ has 'metadescription' => (
     },
 );
 
-# the user's description definition, don't introspect this; look
-# at the metadescription object instead
 has 'description' => (
-    is       => 'ro',
-    isa      => 'HashRef',
-    required => 1,
+    is            => 'ro',
+    isa           => 'HashRef',
+    required      => 1,
+);
+
+has 'trait_classes' => (
+    is         => 'ro',
+    isa        => 'ArrayRef[ClassName]',
+    lazy       => 1,
+    auto_deref => 1,
+    default    => sub {
+        my $self = shift;
+        return [
+            map {
+                my $trait_class;
+                if(/^[+](.+)$/){
+                    $trait_class = $1;
+                }
+                else {
+                    $trait_class =
+                      qq{MooseX::MetaDescription::Description::Trait::$_};
+                }
+
+                Class::MOP::load_class($trait_class);
+                $trait_class;
+            } @{$self->description->{traits}||[]}
+        ];
+    },
 );
 
 1;
@@ -62,3 +72,6 @@ trait for attributes with metadescriptions
 
 =head1 SYNOPSIS
 
+  use Moose;
+
+  has
