@@ -4,6 +4,19 @@ use MooseX::MetaDescription::Description::Moose;
 use Moose::Meta::Class;
 use Moose::Util ();
 
+sub _instantiate_type {
+    my $description = shift;
+    my $type = $description->{type};
+    return if ref $type;
+    
+    my $class = "MooseX::MetaDescription::Type::$type";
+    Class::MOP::load_class($class);
+    
+    my @args = %{$description->{type_args}||{}};
+    $description->{type} = $class->new(@args);
+    ref;
+}
+
 has 'metadescription' => (
     is       => 'ro',
     isa      => 'MooseX::MetaDescription::Description',
@@ -15,8 +28,11 @@ has 'metadescription' => (
         my @traits = $self->trait_classes;
 
         my $base = 'MooseX::MetaDescription::Description::Moose';
-        my @args = ( attribute => $self, %{$self->description} );
+        my $desc = $self->description;
+        _instantiate_type($desc);
 
+        my @args = ( attribute => $self, %$desc );
+        
         if(@traits){
             my $class = Moose::Meta::Class->create_anon_class(
                 superclasses => [$base],

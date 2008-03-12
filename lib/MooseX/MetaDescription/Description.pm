@@ -11,15 +11,7 @@ has 'name' => (
 has 'type' => (
     is       => 'ro',
     isa      => 'MooseX::MetaDescription::Type',
-    coerce   => 1,
     required => 1,
-);
-
-has 'type_args' => (
-    is         => 'ro',
-    isa        => 'HashRef',
-    auto_deref => 1,
-    predicate  => 'has_type_args',
 );
 
 has 'is_writable' => (
@@ -27,14 +19,6 @@ has 'is_writable' => (
     isa      => 'Bool',
     required => 1,
 );
-
-sub BUILD {
-    my $self = shift;
-    if($self->has_type_args){
-        my $new_type = (ref $self->type)->new( $self->type_args );
-        $self->meta->get_attribute('type')->set_value( $self, $new_type );
-    }
-}
 
 1;
 

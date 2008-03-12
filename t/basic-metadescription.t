@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Scalar::Util qw(refaddr);
-use Test::More tests => 10;
+use Test::More tests => 9;
 
 { package Foo;
   use MooseX::MetaDescription;
@@ -46,10 +46,6 @@ my $foo_desc = $foo->meta->metadescription;
 my $an_attribute_desc = $foo->meta->get_attribute('an_attribute')->metadescription;
 isa_ok $foo_desc, 'MooseX::MetaDescription::Container';
 isa_ok $an_attribute_desc, 'MooseX::MetaDescription::Description';
-
-my $an_attribute = $foo->meta->get_attribute('an_attribute');
-is_deeply $an_attribute->{description}, { type => 'String' },
-  'raw description is in attribute';
 
 is_ref $foo_desc->class, $foo->meta, 'description class == metaclass';
 
