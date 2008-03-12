@@ -1,5 +1,6 @@
 package MooseX::MetaDescription::Container;
 use Moose;
+use MooseX::AttributeHelpers;
 
 has 'attributes' => (
     metaclass => 'Collection::Hash',
