@@ -19,7 +19,7 @@ has 'cardinality' => (
 
 sub is_required_cardinality {
     my ($self, $array) = @_;
-    return unless ref $array == 'ARRAY';
+    return unless ref $array eq 'ARRAY';
     
     my %rules = (
         '+' => transformed { $_ > 0 },
@@ -27,7 +27,7 @@ sub is_required_cardinality {
         '*' => transformed { 1 },
         '1' => transformed { $_ == 1 },
     );
-
+    
     return $rules{$self->cardinality}->(scalar @$array);
 }
 

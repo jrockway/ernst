@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::Exception;
-use Test::More tests => 4;
+use Test::More tests => 7;
 
 { my @MD = ( traits => ['MetaDescription'] ); 
 
@@ -54,6 +54,11 @@ lives_ok {
     ]);
 };
 ok $doc;
+
+my $t = $doc->meta->metadescription->attribute('languages')->type;
+ok !$t->is_required_cardinality([]);
+ok $t->is_required_cardinality([1]);
+ok $t->is_required_cardinality([1,2]);
 
 my $attrs;
 lives_ok { $attrs = [attributes($doc->meta->metadescription)] };
