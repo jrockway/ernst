@@ -4,8 +4,6 @@ use MooseX::MetaDescription::Description::Moose;
 use Moose::Meta::Class;
 use Moose::Util ();
 
-my %ANON_CLASSES;
-
 has 'metadescription' => (
     is       => 'ro',
     isa      => 'MooseX::MetaDescription::Description',
@@ -16,17 +14,13 @@ has 'metadescription' => (
         
         my @traits = 
           map {
-              my $trait = $_;
               my $trait_class;
-              if($trait =~ /^[+](.+)$/){
+              if(/^[+](.+)$/){
                   $trait_class = $1;
               }
               else {
                   $trait_class = 
-                    qq{MooseX::MetaDescription::Description::Trait::$trait};
-                  if($trait_class->can('register_implementation')){
-                      $trait_class = $trait_class->register_implementat;
-                  }
+                    qq{MooseX::MetaDescription::Description::Trait::$_};
               }
               
               Class::MOP::load_class($trait_class);
