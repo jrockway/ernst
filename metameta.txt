@@ -1,0 +1,136 @@
+Metadescribing metadescriptions?
+
+Yes.
+
+Container
+  name
+      type: ClassName
+
+  instance_builder
+      type: InstanceBuilder
+      # this is basically a way of building 
+
+  class_builder
+      type: ClassBuilder
+
+  ATTRIBUTES
+      type: Container
+      contains: Description
+      cardinality: *
+
+Description
+  name
+    type: String
+
+  type
+    type: Type
+
+  is_writable
+    type: Boolean
+
+  TRAITS:
+    type: Container
+    cardinality: *
+    contains: Type::Trait
+    
+HasOptionList
+
+  OPTIONS
+    type: Container
+    contains: String   
+    cardinality: +
+
+Type << HasOptionList
+  name
+    type: String
+
+--- example form ---
+
+Container:
+
+   Name: [ MyApp::Form::TestForm ]
+
+   Builder:    ( ) SomeRandomBuilder
+               (x) Moose
+                   Metaclass traits:
+                  [X] File::Storage
+                      Directory: [ /tmp/testform ] 
+                      Id:        ( ) foo
+                                 (X) bar
+
+                  [ ] ...
+
+   Attributes:
+
+      1. Name: [ foo ]
+         Type: (x) String
+               ( ) Integer
+               ( ) Container
+
+               Max length:   [        ]
+               Min length:   [        ]
+               Usual length: [ 10_000 ]
+
+         Mutable: [ X ] Yes
+
+      2. Name: [ bar ]
+         Type: ( ) String
+               ( ) Integer
+               (x) Container
+
+               Of: (x) String
+                   ( ) Integer
+                   ( ) Container
+
+                   Max length:   [ 64 ]         
+                   Min length:   [  1 ]         
+                   Usual length: [    ]
+
+               Cardinality:
+                   ( ) 1
+                   ( ) ?
+                   (x) *
+                   ( ) +
+
+         Mutable: [ X ] Yes
+
+      [+] Add another attribute
+
+This would generate a package that could be written manually like:
+
+  package MyApp::Form::TestForm
+  use Ernst;
+
+  __PACKAGE__->meta->add_ernst_traits( 
+      File::Storage => { 
+          directory => '/tmp/testform',
+          id_field  => 'bar',
+      }
+  );
+
+  has 'foo' => (
+      traits      => 'MetaDescription',
+      is          => 'rw',
+      isa         => 'Str',
+      description => {
+          type            => 'String',
+          expected_length => 10000,
+      },
+  );
+
+  has 'bar' => (
+      traits      => 'MetaDescription',
+      is          => 'rw',
+      isa         => 'ArrayRef[Str]',
+      description => {
+          type           => 'Container',
+          contains       => 'String',
+          cardinality    => '*'
+          container_args => {
+              min_length => 1,
+              max_length => 64,
+          },
+      },
+  );
+
+  1;
