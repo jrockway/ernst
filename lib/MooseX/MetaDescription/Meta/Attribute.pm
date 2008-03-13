@@ -14,7 +14,6 @@ sub _instantiate_type {
     
     my @args = %{$description->{type_args}||{}};
     $description->{type} = $class->new(@args);
-    ref;
 }
 
 has 'metadescription' => (

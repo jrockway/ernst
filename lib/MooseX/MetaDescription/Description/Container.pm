@@ -1,6 +1,8 @@
-package MooseX::MetaDescription::Container;
+package MooseX::MetaDescription::Description::Container;
 use Moose;
 use MooseX::AttributeHelpers;
+
+extends 'MooseX::MetaDescription::Description';
 
 has 'attributes' => (
     metaclass => 'Collection::Hash',
@@ -18,17 +20,20 @@ __END__
 
 =head1 NAME
 
-MooseX::MetaDescription::Container - encapsulates a class's metadescription
+MooseX::MetaDescription::Description::Container - encapsulates a
+class's metadescription
 
 =head1 SYNOPSIS
 
-  my $container = MooseX::MetaDescription::Container->new(
+  my $container = MooseX::MetaDescription::Description::Container->new(
       attributes => {
           foo => MooseX::MetaDescription::Description->new,
       }
   );
 
 =head1 METHODS
+
+The class inherits from L<MooseX::MetaDescription::Description>.
 
 =head2 attribute($name)
 

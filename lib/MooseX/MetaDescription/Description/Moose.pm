@@ -13,11 +13,7 @@ has '+name' => (
     default => sub { shift->attribute->name },
 );
 
-has '+type' => (
-    default => sub { shift->attribute->description->{type} },
-);
-
-has '+is_writable' => (
+has '+is_mutable' => (
     default => sub { 
         my $a = shift->attribute;
         ($a->has_writer || $a->has_accessor) ? 1 : 0;

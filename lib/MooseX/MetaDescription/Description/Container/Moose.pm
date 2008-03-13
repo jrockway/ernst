@@ -1,15 +1,19 @@
-package MooseX::MetaDescription::Container::Moose;
+package MooseX::MetaDescription::Description::Container::Moose;
 use Moose;
 use MooseX::AttributeHelpers;
-use MooseX::MetaDescription::Description;
-use Moose::Util qw(does_role);
+use MooseX::MetaDescription::Description::Container;
 
-extends 'MooseX::MetaDescription::Container';
+extends 'MooseX::MetaDescription::Description::Container';
 
 has 'class' => (
     isa      => 'MooseX::MetaDescription::Meta::Class',
     is       => 'ro',
     required => 1,
+);
+
+has '+name' => (
+    lazy    => 1,
+    default => sub { shift->class->name },
 );
 
 has '+attributes' => (
@@ -31,17 +35,17 @@ has '+attributes' => (
 );
 
 1;
-
+#
 __END__
 
 =head1 NAME
 
-MooseX::MetaDescription::Container::Moose - a
-MooseX::MetaDescription::Container for Moose classes
+MooseX::MetaDescription::Description::Container::Moose - a
+MooseX::MetaDescription::Description::Container for Moose classes
 
 =head1 SYNOPSIS
 
-  my $container = MooseX::MetaDescription::Container::Moose->new(
+  my $container = MooseX::MetaDescription::Description::Container::Moose->new(
       class => Some::Moose::Class->meta,
   );
 
@@ -51,10 +55,6 @@ MooseX::MetaDescription::Container for Moose classes
 
 =head1 METHODS
 
-=head2 attribute($name)
-
-Returns the attribute metadescription class for the attribute C<$name>.
-
-=head2 attributes
-
-Returns a hash mapping attribute names to attribute metadescription classes.
+This class inherits from
+L<MooseX::MetaDescription::Description::Container> and
+L<MooseX::MetaDescription::Description>.

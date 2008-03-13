@@ -1,6 +1,5 @@
 package MooseX::MetaDescription::Description;
 use Moose;
-use MooseX::MetaDescription::TypeLibrary;
 
 has 'name' => (
     is       => 'ro',
@@ -8,16 +7,10 @@ has 'name' => (
     required => 1,
 );
 
-has 'type' => (
-    is       => 'ro',
-    isa      => 'MooseX::MetaDescription::Type',
-    required => 1,
-);
-
-has 'is_writable' => (
+has 'is_mutable' => (
     is       => 'ro',
     isa      => 'Bool',
-    required => 1,
+    default  => sub { 0 },
 );
 
 1;
@@ -30,15 +23,3 @@ MooseX::MetaDescription::Description - a metadescription of a single
 attribute
 
 =head1 SYNOPSIS
-
-  my $desc = Some::Container->attribute('foo');
-
-  my $name = $desc->name;
-  my $type = $desc->type->name;
-
-  say "This attribute is called '$name' and is a '$type'";
-
-  if($desc->does('MooseX::MetaDescription::Trait::CSS')){
-     # now you know you can call "css"
-     my $css_class = $desc->css->class;
-  }
