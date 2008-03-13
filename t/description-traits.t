@@ -55,7 +55,7 @@ my $desc = $container->attribute('attribute');
 ok $desc, 'got description for attribute';
 
 is $desc->name, 'attribute', 'correct name';
-is $desc->type->name, 'String', 'correct type';
+is $desc->type, 'String', 'correct type';
 
 ok $desc->does('MooseX::MetaDescription::Description::Trait::DoesThisWork'),
   'applied DoesThisWork trait ok';
@@ -69,10 +69,10 @@ is ref $container->attribute('attribute'),
    ref $container->attribute('attribute2'),
   'attribute and attribute2 have the same type (due to same traits)';
 
-is ref $container->attribute('attribute3'),
-   'MooseX::MetaDescription::Description::Moose',
-  'attribute3 has the plain type, since it has no traits';
+isnt ref $container->attribute('attribute3'),
+     ref $container->attribute('attribute'),
+  'attribute3 has a different type';
 
 # check read-only-ness
-ok $container->attribute('attribute')->is_writable;
-ok !$container->attribute('attribute2')->is_writable;
+ok $container->attribute('attribute')->is_mutable;
+ok !$container->attribute('attribute2')->is_mutable;

@@ -7,6 +7,25 @@ has 'name' => (
     required => 1,
 );
 
+has 'type' => (
+    is       => 'ro',
+    isa      => 'Str',
+    required => 1,
+    default  => sub {
+        my $self  = shift;
+        
+        my $p = __PACKAGE__;
+        for my $c ($self->meta->superclasses) {
+            if ( $c =~ /^${p}::(.+)$/ ) {
+                return $1;
+            }
+        }
+        
+        confess 'Something has gone horribly wrong; cannot guess the type of ',
+          ref $self;
+    }
+);
+
 has 'is_mutable' => (
     is       => 'ro',
     isa      => 'Bool',
@@ -14,6 +33,7 @@ has 'is_mutable' => (
 );
 
 1;
+
 
 __END__
 

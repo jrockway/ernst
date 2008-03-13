@@ -4,8 +4,9 @@ use MooseX::MetaDescription::Description::Moose;
 use Moose::Meta::Class;
 use Moose::Util ();
 
-sub _get_type {
+sub _get_type_class {
     my $type = shift;
+
     confess "type must be a string, not a $type"
       if ref $type;
     
@@ -27,9 +28,12 @@ has 'metadescription' => (
             'MooseX::MetaDescription::Description::Moose', # for the attribute attribute
             $self->trait_class_names,
         );
-
+        
         my $desc = $self->description;
-        my $base = _get_type(delete $desc->{type});
+        
+        my $type = $desc->{type} or confess
+          "The attribute '", $self->name, "' must have a type in its description";
+        my $base = _get_type_class($type);
 
         my $class = Moose::Meta::Class->create_anon_class(
             superclasses => [$base],
