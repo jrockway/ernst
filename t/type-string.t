@@ -22,6 +22,6 @@ use ok 'MooseX::MetaDescription::Description::String';
 
 # make sure type-specific attributes stick
 
-is(Class->meta->metadescription->attribute('greeting')->min_length, 5);
-is(Class->meta->metadescription->attribute('greeting')->max_length, 10);
-ok !Class->meta->metadescription->attribute('greeting')->has_expected_length;
+is(Class->meta->metadescription->get_attribute('greeting')->min_length, 5);
+is(Class->meta->metadescription->get_attribute('greeting')->max_length, 10);
+ok !Class->meta->metadescription->get_attribute('greeting')->has_expected_length;

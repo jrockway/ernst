@@ -22,5 +22,5 @@ use Test::More tests => 1;
 # TODO: change the type to Container::Weak and change semantics
 # the below is more of a failure than a success:
 
-my $cycle = Foo->meta->metadescription->attribute('parent');
-is $cycle, $cycle->description->attribute('parent');
+my $cycle = Foo->meta->metadescription->get_attribute('parent');
+is $cycle, $cycle->description->get_attribute('parent');

@@ -5,12 +5,13 @@ use MooseX::AttributeHelpers;
 extends 'MooseX::MetaDescription::Description';
 
 has 'attributes' => (
+    reader    => 'get_attribute_map',
     metaclass => 'Collection::Hash',
     isa       => 'HashRef[MooseX::MetaDescription::Description]',
     is        => 'ro',
     provides  => {
-        get  => 'attribute',
-        keys => 'attribute_names',
+        get  => 'get_attribute',
+        keys => 'get_attribute_list',
     },
 );
 
@@ -35,10 +36,14 @@ class's metadescription
 
 The class inherits from L<MooseX::MetaDescription::Description>.
 
-=head2 attribute($name)
+=head2 get_attribute($name)
 
 Returns the attribute metadescription class for the attribute C<$name>.
 
-=head2 attributes
+=head2 get_attribute_map
 
 Returns a hash mapping attribute names to attribute metadescription classes.
+
+=head2 get_attribute_list
+
+Returns the names of the contained attributes.

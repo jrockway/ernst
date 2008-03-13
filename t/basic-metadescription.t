@@ -53,9 +53,9 @@ is $an_attribute_desc->name, 'an_attribute', 'correct name for an_attribute';
 is_ref $foo_desc->class, $foo->meta, 'description class == metaclass';
 
 is_ref 
-  $foo_desc->attribute('an_attribute'), 
+  $foo_desc->get_attribute('an_attribute'), 
   $foo->meta->get_attribute('an_attribute')->metadescription,
   'container -> attribute == attribute -> metadescription';
 
-is_deeply [keys %{$foo_desc->attributes}], ['an_attribute'],
+is_deeply [$foo_desc->get_attribute_list], ['an_attribute'],
   'no extra descriptions';

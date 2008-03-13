@@ -60,7 +60,7 @@ ok(Document->meta->metadescription, 'Document has metadescription');
 
 ok $doc->meta->get_attribute('languages')->metadescription;
 
-my $t = $doc->meta->metadescription->attribute('languages');
+my $t = $doc->meta->metadescription->get_attribute('languages');
 ok !$t->is_required_cardinality([]);
 ok $t->is_required_cardinality([1]);
 ok $t->is_required_cardinality([1,2]);
@@ -76,8 +76,8 @@ is_deeply $attrs,
 sub attributes {
     my $container = shift;
     my @result;
-    foreach my $name ($container->attribute_names) {
-        my $attr = $container->attribute($name);
+    foreach my $name ($container->get_attribute_list) {
+        my $attr = $container->get_attribute($name);
         if($attr->type eq 'Collection'){
             push @result, [ $name => [ attributes($attr->description) ]];
         }

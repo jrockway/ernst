@@ -51,7 +51,7 @@ isa_ok $foo, 'Class', '$foo';
 my $container = Class->meta->metadescription;
 ok $container, 'got container';
 
-my $desc = $container->attribute('attribute');
+my $desc = $container->get_attribute('attribute');
 ok $desc, 'got description for attribute';
 
 is $desc->name, 'attribute', 'correct name';
@@ -65,14 +65,14 @@ is $desc->some_configurable_argument, 'amazingly this works',
   q{the trait's BUILD works};
 
 # make sure attribute and attribute2 have the same description class
-is ref $container->attribute('attribute'),
-   ref $container->attribute('attribute2'),
+is ref $container->get_attribute('attribute'),
+   ref $container->get_attribute('attribute2'),
   'attribute and attribute2 have the same type (due to same traits)';
 
-isnt ref $container->attribute('attribute3'),
-     ref $container->attribute('attribute'),
+isnt ref $container->get_attribute('attribute3'),
+     ref $container->get_attribute('attribute'),
   'attribute3 has a different type';
 
 # check read-only-ness
-ok $container->attribute('attribute')->is_mutable;
-ok !$container->attribute('attribute2')->is_mutable;
+ok $container->get_attribute('attribute')->is_mutable;
+ok !$container->get_attribute('attribute2')->is_mutable;
