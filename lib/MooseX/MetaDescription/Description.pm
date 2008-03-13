@@ -32,6 +32,12 @@ has 'is_mutable' => (
     default  => sub { 0 },
 );
 
+sub types {
+    my $self = shift;
+    my $p = __PACKAGE__; # this package is the stopping point for search up @ISA
+    map { s/^${p}:?:?//; $_ } grep { $_->isa($p) } $self->meta->linearized_isa;
+}
+
 1;
 
 
