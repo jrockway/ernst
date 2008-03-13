@@ -15,7 +15,7 @@ has 'type' => (
         my $self  = shift;
         
         my $p = __PACKAGE__;
-        for my $c ($self->meta->superclasses) {
+        for my $c (ref $self, $self->meta->superclasses) {
             if ( $c =~ /^${p}::(.+)$/ ) {
                 return $1;
             }
