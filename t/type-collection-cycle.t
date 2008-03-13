@@ -12,11 +12,9 @@ use Test::More tests => 1;
         is          => 'ro',
         isa         => 'Foo',
         description => {
-            type      => 'Container',
-            type_args => {
-                contains    => Foo->meta->metadescription,
-                cardinality => '1',
-            },
+            type        => 'Collection',
+            description => Foo->meta->metadescription,
+            cardinality => '+',
         },
     );
 }
@@ -25,4 +23,4 @@ use Test::More tests => 1;
 # the below is more of a failure than a success:
 
 my $cycle = Foo->meta->metadescription->attribute('parent');
-is $cycle, $cycle->type->contains->attribute('parent');
+is $cycle, $cycle->description->attribute('parent');
