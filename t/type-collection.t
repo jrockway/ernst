@@ -1,7 +1,9 @@
 use strict;
 use warnings;
 use Test::Exception;
-use Test::More tests => 7;
+use Test::More tests => 11;
+
+use ok 'MooseX::MetaDescription::Description::Collection';
 
 { my @MD = ( traits => ['MetaDescription'] ); 
 
@@ -31,11 +33,9 @@ use Test::More tests => 7;
       isa         => 'ArrayRef[Language]',
       auto_deref  => 1,
       description => {
-          type      => 'Container',
-          type_args => {
-              contains    => Language->meta->metadescription,
-              cardinality => '+',
-          },
+          type        => 'Collection',
+          description => Language->meta->metadescription,
+          cardinality => '+',
       },
   );
 }
@@ -55,7 +55,12 @@ lives_ok {
 };
 ok $doc;
 
-my $t = $doc->meta->metadescription->attribute('languages')->type;
+ok(Language->meta->metadescription, 'Language has metadescription');
+ok(Document->meta->metadescription, 'Document has metadescription');
+
+ok $doc->meta->get_attribute('languages')->metadescription;
+
+my $t = $doc->meta->metadescription->attribute('languages');
 ok !$t->is_required_cardinality([]);
 ok $t->is_required_cardinality([1]);
 ok $t->is_required_cardinality([1,2]);
@@ -73,11 +78,11 @@ sub attributes {
     my @result;
     foreach my $name ($container->attribute_names) {
         my $attr = $container->attribute($name);
-        if($attr->type->name eq 'Container'){
-            push @result, [ $name => [ attributes($attr->type->contains) ]];
+        if($attr->type eq 'Collection'){
+            push @result, [ $name => [ attributes($attr->description) ]];
         }
         else {
-            push @result, [ $name => $attr->type->name ];
+            push @result, [ $name => $attr->type ];
         }
     }
     return @result;
