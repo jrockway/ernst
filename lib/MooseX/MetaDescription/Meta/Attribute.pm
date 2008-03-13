@@ -4,16 +4,15 @@ use MooseX::MetaDescription::Description::Moose;
 use Moose::Meta::Class;
 use Moose::Util ();
 
-sub _instantiate_type {
-    my $description = shift;
-    my $type = $description->{type};
-    return if ref $type;
+sub _get_type {
+    my $type = shift;
+    confess "type must be a string, not a $type"
+      if ref $type;
     
-    my $class = "MooseX::MetaDescription::Type::$type";
+    my $class = "MooseX::MetaDescription::Description::$type";
     Class::MOP::load_class($class);
     
-    my @args = %{$description->{type_args}||{}};
-    $description->{type} = $class->new(@args);
+    return $class;
 }
 
 has 'metadescription' => (
@@ -24,24 +23,28 @@ has 'metadescription' => (
     default  => sub {
         my $self = shift;
 
-        my @traits = $self->trait_classes;
+        my @traits = (
+            'MooseX::MetaDescription::Description::Moose', # for the attribute attribute
+            $self->trait_class_names,
+        );
 
-        my $base = 'MooseX::MetaDescription::Description::Moose';
         my $desc = $self->description;
-        _instantiate_type($desc);
+        my $base = _get_type(delete $desc->{type});
 
-        my @args = ( attribute => $self, %$desc );
-        
-        if(@traits){
-            my $class = Moose::Meta::Class->create_anon_class(
-                superclasses => [$base],
-                roles        => [@traits],
-                cache        => 1,
-            );
-            return $class->name->new(@args);
-        }
+        my $class = Moose::Meta::Class->create_anon_class(
+            superclasses => [$base],
+            roles        => [@traits],
+            cache        => 1,
+        );
 
-        return $base->new(@args);
+        return $class->name->new(
+            attribute  => $self, 
+            name       => $self->name,
+            is_mutable => (
+                $self->has_writer || $self->has_accessor
+            ),
+            %$desc
+        );
     },
 );
 
@@ -51,7 +54,7 @@ has 'description' => (
     required      => 1,
 );
 
-has 'trait_classes' => (
+has 'trait_class_names' => (
     is         => 'ro',
     isa        => 'ArrayRef[ClassName]',
     lazy       => 1,

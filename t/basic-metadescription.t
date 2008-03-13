@@ -45,7 +45,7 @@ sub is_ref($$;$) { is(refaddr($_[0]), refaddr($_[1]), $_[2]) }
 my $foo_desc = $foo->meta->metadescription;
 my $an_attribute_desc = $foo->meta->get_attribute('an_attribute')->metadescription;
 isa_ok $foo_desc, 'MooseX::MetaDescription::Description::Container';
-isa_ok $an_attribute_desc, 'MooseX::MetaDescription::Description';
+isa_ok $an_attribute_desc, 'MooseX::MetaDescription::Description::String';
 
 is $foo_desc->name, 'Foo', 'correct name for Foo container';
 is $an_attribute_desc->name, 'an_attribute', 'correct name for an_attribute';

@@ -1,12 +1,12 @@
-package MooseX::MetaDescription::Type::Container;
+package MooseX::MetaDescription::Description::Collection;
 use Moose;
 use MooseX::MetaDescription::TypeLibrary;
 use Sub::AliasedUnderscore qw(transformed);
 
-extends 'MooseX::MetaDescription::Type';
+extends 'MooseX::MetaDescription::Description';
 
-has 'contains' => (
-    isa      => 'MooseX::MetaDescription::Container',
+has 'description' => (
+    isa      => 'MooseX::MetaDescription::Description',
     is       => 'ro',
     required => 1,
 );

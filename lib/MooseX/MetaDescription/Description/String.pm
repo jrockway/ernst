@@ -1,7 +1,7 @@
-package MooseX::MetaDescription::Type::String;
+package MooseX::MetaDescription::Description::String;
 use Moose;
 
-extends 'MooseX::MetaDescription::Type';
+extends 'MooseX::MetaDescription::Description';
 
 # min/max length
 
