@@ -1,7 +1,7 @@
 package MooseX::MetaDescription::Description::Container::Moose;
+use MooseX::MetaDescription;
 use Moose;
 use MooseX::AttributeHelpers;
-use MooseX::MetaDescription::Description::Container;
 
 extends 'MooseX::MetaDescription::Description::Container';
 

@@ -1,7 +1,5 @@
 package MooseX::MetaDescription::Meta::Attribute;
 use Moose::Role;
-use MooseX::MetaDescription::Description::Moose;
-use Moose::Meta::Class;
 use Moose::Util ();
 
 sub _get_type_class {
@@ -22,6 +20,9 @@ has 'metadescription' => (
     lazy     => 1,
     weak_ref => 1,
     default  => sub {
+        require MooseX::MetaDescription::Description::Moose;
+        require MooseX::MetaDescription::Meta::Class;
+        
         my $self = shift;
 
         my @traits = (
@@ -35,7 +36,7 @@ has 'metadescription' => (
           "The attribute '", $self->name, "' must have a type in its description";
         my $base = _get_type_class($type);
 
-        my $class = Moose::Meta::Class->create_anon_class(
+        my $class = MooseX::MetaDescription::Meta::Class->create_anon_class(
             superclasses => [$base],
             roles        => [@traits],
             cache        => 1,

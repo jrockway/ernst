@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 10;
+use Test::More tests => 16;
 
 use ok 'MooseX::MetaDescription::Description';
 use ok 'MooseX::MetaDescription::Description::Container';
@@ -24,3 +24,10 @@ is_deeply
   [MooseX::MetaDescription::Description::Container::Moose->types],
   ['Container::Moose', 'Container', ''],
   q{Container::Moose -> Container -> ''};
+
+ok(MooseX::MetaDescription::Description::String->type_isa('String'));
+ok(MooseX::MetaDescription::Description::String->type_isa(''));
+ok(MooseX::MetaDescription::Description::Container::Moose->type_isa('Container::Moose'));
+ok(MooseX::MetaDescription::Description::Container::Moose->type_isa('Container'));
+ok(MooseX::MetaDescription::Description::Container::Moose->type_isa(''));
+ok(!MooseX::MetaDescription::Description::Container::Moose->type_isa('String'));

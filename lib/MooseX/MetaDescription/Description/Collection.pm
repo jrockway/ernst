@@ -1,4 +1,5 @@
 package MooseX::MetaDescription::Description::Collection;
+use MooseX::MetaDescription;
 use Moose;
 use MooseX::MetaDescription::TypeLibrary;
 use Sub::AliasedUnderscore qw(transformed);
@@ -6,15 +7,24 @@ use Sub::AliasedUnderscore qw(transformed);
 extends 'MooseX::MetaDescription::Description';
 
 has 'description' => (
-    isa      => 'MooseX::MetaDescription::Description',
-    is       => 'ro',
-    required => 1,
+    isa         => 'MooseX::MetaDescription::Description',
+    is          => 'ro',
+    required    => 1,
+    traits      => ['MetaDescription'],
+    description => {
+        type => 'String',
+    },
 );
 
 has 'cardinality' => (
-    isa      => 'ContainerCardinality',
-    is       => 'ro',
-    required => 1,
+    isa         => 'ContainerCardinality',
+    is          => 'ro',
+    required    => 1,
+    traits      => ['MetaDescription'],
+    description => {
+        type    => 'OptionList',
+        options => [qw/+ ? * 1/],
+    },
 );
 
 sub is_required_cardinality {

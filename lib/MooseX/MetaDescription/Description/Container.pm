@@ -1,17 +1,27 @@
 package MooseX::MetaDescription::Description::Container;
+use MooseX::MetaDescription;
 use Moose;
 use MooseX::AttributeHelpers;
+use Data::Thunk 'lazy';
 
 extends 'MooseX::MetaDescription::Description';
 
 has 'attributes' => (
-    reader    => 'get_attribute_map',
-    metaclass => 'Collection::Hash',
-    isa       => 'HashRef[MooseX::MetaDescription::Description]',
-    is        => 'ro',
-    provides  => {
+    reader        => 'get_attribute_map',
+    metaclass     => 'Collection::Hash',
+    isa           => 'HashRef[MooseX::MetaDescription::Description]',
+    is            => 'ro',
+    provides      => {
         get  => 'get_attribute',
         keys => 'get_attribute_list',
+    },
+    traits        => ['MetaDescription'],
+    description   => {
+        type        => 'Collection',
+        description => lazy {
+            MooseX::MetaDescription::Description->meta->metadescription;
+        },
+        cardinality => '*',
     },
 );
 

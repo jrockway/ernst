@@ -1,4 +1,5 @@
 package MooseX::MetaDescription::Description::String;
+use MooseX::MetaDescription;
 use Moose;
 
 extends 'MooseX::MetaDescription::Description';
@@ -6,9 +7,13 @@ extends 'MooseX::MetaDescription::Description';
 # min/max length
 
 has "${_}_length" => (
-    is        => 'ro',
-    isa       => 'Int',
-    predicate => "has_${_}_length",
+    is          => 'ro',
+    isa         => 'Int',
+    predicate   => "has_${_}_length",
+    traits      => ['MetaDescription'],
+    description => {
+        type =>  'Integer',
+    },
 ) for qw/min max expected/;
 
 # expected_length is for guessing the size of text fields if there is
