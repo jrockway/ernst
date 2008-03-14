@@ -1,5 +1,5 @@
-package MooseX::MetaDescription::Description;
-use MooseX::MetaDescription;
+package Ernst::Description;
+use Ernst;
 use Moose;
 
 my $PACKAGE      = __PACKAGE__;
@@ -67,7 +67,7 @@ __END__
 
 =head1 NAME
 
-MooseX::MetaDescription::Description - a metadescription of a single
+Ernst::Description - a metadescription of a single
 attribute
 
 =head1 SYNOPSIS

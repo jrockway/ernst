@@ -4,7 +4,7 @@ use Scalar::Util qw(refaddr);
 use Test::More tests => 11;
 
 { package Foo;
-  use MooseX::MetaDescription;
+  use Ernst;
   use Moose;
   
   has 'an_attribute' => (
@@ -22,7 +22,7 @@ use Test::More tests => 11;
 
 my $foo = Foo->new(an_attribute => 'hello, world');
 isa_ok $foo, 'Foo', '$foo';
-isa_ok $foo->meta, 'MooseX::MetaDescription::Meta::Class', q{$foo's metaclass};
+isa_ok $foo->meta, 'Ernst::Meta::Class', q{$foo's metaclass};
 
 ok $foo->meta->get_attribute('an_attribute')->can('metadescription'),
   'an_attribute can metadescription';
@@ -44,8 +44,8 @@ ok !$foo->meta->get_attribute('foo')->can('metadescription'),
 sub is_ref($$;$) { is(refaddr($_[0]), refaddr($_[1]), $_[2]) }
 my $foo_desc = $foo->meta->metadescription;
 my $an_attribute_desc = $foo->meta->get_attribute('an_attribute')->metadescription;
-isa_ok $foo_desc, 'MooseX::MetaDescription::Description::Container';
-isa_ok $an_attribute_desc, 'MooseX::MetaDescription::Description::String';
+isa_ok $foo_desc, 'Ernst::Description::Container';
+isa_ok $an_attribute_desc, 'Ernst::Description::String';
 
 is $foo_desc->name, 'Foo', 'correct name for Foo container';
 is $an_attribute_desc->name, 'an_attribute', 'correct name for an_attribute';

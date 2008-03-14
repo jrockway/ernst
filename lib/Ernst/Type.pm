@@ -1,4 +1,4 @@
-package MooseX::MetaDescription::Type;
+package Ernst::Type;
 use Moose;
 
 has 'name' => (

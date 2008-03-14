@@ -1,9 +1,9 @@
-package MooseX::MetaDescription::Description::OptionList;
-use MooseX::MetaDescription;
+package Ernst::Description::OptionList;
+use Ernst;
 use Moose;
-use MooseX::MetaDescription::Description::String;
+use Ernst::Description::String;
 
-extends 'MooseX::MetaDescription::Description';
+extends 'Ernst::Description';
 
 has 'options' => (
     is          => 'ro',
@@ -15,7 +15,7 @@ has 'options' => (
         type        => 'Collection',
         cardinality => '+',
         description => 
-          MooseX::MetaDescription::Description::String->meta->metadescription,
+          Ernst::Description::String->meta->metadescription,
     },
 );
 

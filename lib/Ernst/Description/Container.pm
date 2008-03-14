@@ -1,15 +1,15 @@
-package MooseX::MetaDescription::Description::Container;
-use MooseX::MetaDescription;
+package Ernst::Description::Container;
+use Ernst;
 use Moose;
 use MooseX::AttributeHelpers;
 use Data::Thunk 'lazy';
 
-extends 'MooseX::MetaDescription::Description';
+extends 'Ernst::Description';
 
 has 'attributes' => (
     reader        => 'get_attribute_map',
     metaclass     => 'Collection::Hash',
-    isa           => 'HashRef[MooseX::MetaDescription::Description]',
+    isa           => 'HashRef[Ernst::Description]',
     is            => 'ro',
     provides      => {
         get  => 'get_attribute',
@@ -19,7 +19,7 @@ has 'attributes' => (
     description   => {
         type        => 'Collection',
         description => lazy {
-            MooseX::MetaDescription::Description->meta->metadescription;
+            Ernst::Description->meta->metadescription;
         },
         cardinality => '*',
     },
@@ -31,20 +31,20 @@ __END__
 
 =head1 NAME
 
-MooseX::MetaDescription::Description::Container - encapsulates a
+Ernst::Description::Container - encapsulates a
 class's metadescription
 
 =head1 SYNOPSIS
 
-  my $container = MooseX::MetaDescription::Description::Container->new(
+  my $container = Ernst::Description::Container->new(
       attributes => {
-          foo => MooseX::MetaDescription::Description->new,
+          foo => Ernst::Description->new,
       }
   );
 
 =head1 METHODS
 
-The class inherits from L<MooseX::MetaDescription::Description>.
+The class inherits from L<Ernst::Description>.
 
 =head2 get_attribute($name)
 

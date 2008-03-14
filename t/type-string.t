@@ -2,10 +2,10 @@ use strict;
 use warnings;
 use Test::More tests => 4;
 
-use ok 'MooseX::MetaDescription::Description::String';
+use ok 'Ernst::Description::String';
 
 { package Class;
-  use MooseX::MetaDescription;
+  use Ernst;
   use Moose;
   
   has 'greeting' => (

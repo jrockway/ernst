@@ -1,7 +1,7 @@
 use inc::Module::Install;
 
-name 'MooseX-MetaDescription';
-all_from 'lib/MooseX/MetaDescription.pm';
+name 'Ernst';
+all_from 'lib/Ernst.pm';
 
 requires 'Data::Thunk';
 requires 'Moose' => '0.39_01';

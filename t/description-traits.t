@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use Test::More tests => 12;
 
-{ package MooseX::MetaDescription::Description::Trait::DoesThisWork;
+{ package Ernst::Description::Trait::DoesThisWork;
   use Moose::Role;
   has 'did_it_work' => (
       is      => 'ro',
@@ -19,7 +19,7 @@ use Test::More tests => 12;
 }
 
 { package Class;
-  use MooseX::MetaDescription;
+  use Ernst;
   use Moose;
 
   my @def = (
@@ -57,7 +57,7 @@ ok $desc, 'got description for attribute';
 is $desc->name, 'attribute', 'correct name';
 is $desc->type, 'String', 'correct type';
 
-ok $desc->does('MooseX::MetaDescription::Description::Trait::DoesThisWork'),
+ok $desc->does('Ernst::Description::Trait::DoesThisWork'),
   'applied DoesThisWork trait ok';
 
 is $desc->did_it_work, '1', 'did_it_work is true!';

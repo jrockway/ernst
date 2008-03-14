@@ -1,4 +1,4 @@
-package MooseX::MetaDescription::Meta::Attribute;
+package Ernst::Meta::Attribute;
 use Moose::Role;
 use Moose::Util ();
 
@@ -8,7 +8,7 @@ sub _get_type_class {
     confess "type must be a string, not a $type"
       if ref $type;
     
-    my $class = "MooseX::MetaDescription::Description::$type";
+    my $class = "Ernst::Description::$type";
     Class::MOP::load_class($class);
     
     return $class;
@@ -16,17 +16,17 @@ sub _get_type_class {
 
 has 'metadescription' => (
     is       => 'ro',
-    isa      => 'MooseX::MetaDescription::Description',
+    isa      => 'Ernst::Description',
     lazy     => 1,
     weak_ref => 1,
     default  => sub {
-        require MooseX::MetaDescription::Description::Moose;
-        require MooseX::MetaDescription::Meta::Class;
+        require Ernst::Description::Moose;
+        require Ernst::Meta::Class;
         
         my $self = shift;
 
         my @traits = (
-            'MooseX::MetaDescription::Description::Moose', # for the attribute attribute
+            'Ernst::Description::Moose', # for the attribute attribute
             $self->trait_class_names,
         );
         
@@ -36,7 +36,7 @@ has 'metadescription' => (
           "The attribute '", $self->name, "' must have a type in its description";
         my $base = _get_type_class($type);
 
-        my $class = MooseX::MetaDescription::Meta::Class->create_anon_class(
+        my $class = Ernst::Meta::Class->create_anon_class(
             superclasses => [$base],
             roles        => [@traits],
             cache        => 1,
@@ -74,7 +74,7 @@ has 'trait_class_names' => (
                 }
                 else {
                     $trait_class =
-                      qq{MooseX::MetaDescription::Description::Trait::$_};
+                      qq{Ernst::Description::Trait::$_};
                 }
 
                 Class::MOP::load_class($trait_class);
@@ -90,7 +90,7 @@ __END__
 
 =head1 NAME
 
-MooseX::MetaDescription::Meta::Attribute - the attribute metaclass
+Ernst::Meta::Attribute - the attribute metaclass
 trait for attributes with metadescriptions
 
 =head1 SYNOPSIS

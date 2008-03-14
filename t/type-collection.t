@@ -3,12 +3,12 @@ use warnings;
 use Test::Exception;
 use Test::More tests => 11;
 
-use ok 'MooseX::MetaDescription::Description::Collection';
+use ok 'Ernst::Description::Collection';
 
 { my @MD = ( traits => ['MetaDescription'] ); 
 
   package Language;
-  use MooseX::MetaDescription;
+  use Ernst;
   use Moose;
 
   my @str = (
@@ -24,7 +24,7 @@ use ok 'MooseX::MetaDescription::Description::Collection';
   has 'encoding' => @str;
   
   package Document;
-  use MooseX::MetaDescription;
+  use Ernst;
   use Moose;
 
   has 'languages' => (

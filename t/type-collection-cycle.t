@@ -4,7 +4,7 @@ use Test::More tests => 1;
 
 { 
     package Foo;
-    use MooseX::MetaDescription;
+    use Ernst;
     use Moose;
     
     has 'parent' => (

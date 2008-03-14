@@ -1,8 +1,8 @@
-package MooseX::MetaDescription::TypeLibrary;
+package Ernst::TypeLibrary;
 use Moose;
 
 use Moose::Util::TypeConstraints;
-use MooseX::MetaDescription::Type;
+use Ernst::Type;
 
 subtype 'ContainerCardinality'
   => as 'Str',
@@ -15,8 +15,8 @@ __END__
 
 =head1 NAME
 
-MooseX::MetaDescription::TypeLibrary - internal Moose types for
-MooseX::MetaDescription
+Ernst::TypeLibrary - internal Moose types for
+Ernst
 
 =head1 SYNOPSIS
 

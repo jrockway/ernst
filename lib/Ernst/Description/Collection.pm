@@ -1,13 +1,13 @@
-package MooseX::MetaDescription::Description::Collection;
-use MooseX::MetaDescription;
+package Ernst::Description::Collection;
+use Ernst;
 use Moose;
-use MooseX::MetaDescription::TypeLibrary;
+use Ernst::TypeLibrary;
 use Sub::AliasedUnderscore qw(transformed);
 
-extends 'MooseX::MetaDescription::Description';
+extends 'Ernst::Description';
 
 has 'description' => (
-    isa         => 'MooseX::MetaDescription::Description',
+    isa         => 'Ernst::Description',
     is          => 'ro',
     required    => 1,
     traits      => ['MetaDescription'],

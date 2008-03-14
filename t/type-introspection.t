@@ -2,32 +2,32 @@ use strict;
 use warnings;
 use Test::More tests => 16;
 
-use ok 'MooseX::MetaDescription::Description';
-use ok 'MooseX::MetaDescription::Description::Container';
-use ok 'MooseX::MetaDescription::Description::Container::Moose';
-use ok 'MooseX::MetaDescription::Description::String';
-use ok 'MooseX::MetaDescription::Description::Integer';
-use ok 'MooseX::MetaDescription::Description::Boolean';
-use ok 'MooseX::MetaDescription::Description::Collection';
+use ok 'Ernst::Description';
+use ok 'Ernst::Description::Container';
+use ok 'Ernst::Description::Container::Moose';
+use ok 'Ernst::Description::String';
+use ok 'Ernst::Description::Integer';
+use ok 'Ernst::Description::Boolean';
+use ok 'Ernst::Description::Collection';
 
 is_deeply 
-  [MooseX::MetaDescription::Description->types],
+  [Ernst::Description->types],
   [''],
   'no supertypes of the Description';
 
 is_deeply 
-  [MooseX::MetaDescription::Description::String->types],
+  [Ernst::Description::String->types],
   ['String', ''],
   'only Description is a supertype of String';
 
 is_deeply 
-  [MooseX::MetaDescription::Description::Container::Moose->types],
+  [Ernst::Description::Container::Moose->types],
   ['Container::Moose', 'Container', ''],
   q{Container::Moose -> Container -> ''};
 
-ok(MooseX::MetaDescription::Description::String->type_isa('String'));
-ok(MooseX::MetaDescription::Description::String->type_isa(''));
-ok(MooseX::MetaDescription::Description::Container::Moose->type_isa('Container::Moose'));
-ok(MooseX::MetaDescription::Description::Container::Moose->type_isa('Container'));
-ok(MooseX::MetaDescription::Description::Container::Moose->type_isa(''));
-ok(!MooseX::MetaDescription::Description::Container::Moose->type_isa('String'));
+ok(Ernst::Description::String->type_isa('String'));
+ok(Ernst::Description::String->type_isa(''));
+ok(Ernst::Description::Container::Moose->type_isa('Container::Moose'));
+ok(Ernst::Description::Container::Moose->type_isa('Container'));
+ok(Ernst::Description::Container::Moose->type_isa(''));
+ok(!Ernst::Description::Container::Moose->type_isa('String'));

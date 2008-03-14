@@ -1,8 +1,8 @@
-package MooseX::MetaDescription::Description::String;
-use MooseX::MetaDescription;
+package Ernst::Description::String;
+use Ernst;
 use Moose;
 
-extends 'MooseX::MetaDescription::Description';
+extends 'Ernst::Description';
 
 # min/max length
 

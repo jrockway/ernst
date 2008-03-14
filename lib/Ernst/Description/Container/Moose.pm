@@ -1,12 +1,12 @@
-package MooseX::MetaDescription::Description::Container::Moose;
-use MooseX::MetaDescription;
+package Ernst::Description::Container::Moose;
+use Ernst;
 use Moose;
 use MooseX::AttributeHelpers;
 
-extends 'MooseX::MetaDescription::Description::Container';
+extends 'Ernst::Description::Container';
 
 has 'class' => (
-    isa      => 'MooseX::MetaDescription::Meta::Class',
+    isa      => 'Ernst::Meta::Class',
     is       => 'ro',
     required => 1,
 );
@@ -40,12 +40,12 @@ __END__
 
 =head1 NAME
 
-MooseX::MetaDescription::Description::Container::Moose - a
-MooseX::MetaDescription::Description::Container for Moose classes
+Ernst::Description::Container::Moose - a
+Ernst::Description::Container for Moose classes
 
 =head1 SYNOPSIS
 
-  my $container = MooseX::MetaDescription::Description::Container::Moose->new(
+  my $container = Ernst::Description::Container::Moose->new(
       class => Some::Moose::Class->meta,
   );
 
@@ -56,5 +56,5 @@ MooseX::MetaDescription::Description::Container for Moose classes
 =head1 METHODS
 
 This class inherits from
-L<MooseX::MetaDescription::Description::Container> and
-L<MooseX::MetaDescription::Description>.
+L<Ernst::Description::Container> and
+L<Ernst::Description>.
