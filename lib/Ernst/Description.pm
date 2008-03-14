@@ -66,7 +66,93 @@ __END__
 
 =head1 NAME
 
-Ernst::Description - a metadescription of a single
-attribute
+Ernst::Description - attribute description (type) base class
 
 =head1 SYNOPSIS
+
+C<Ernst::Description> is the base of all metadescriptions.  When you
+read a class' metadescription, it will be a tree of subclasses of this
+class.
+
+Create a type:
+
+  package Ernst::Description::Foo;
+  extends 'Ernst::Description';
+
+  package Ernst::Description::Bar;
+  extends 'Ernst::Description';
+  sub is_valid_bar { my $thingie = shift; frob($thingie) };
+
+Then get an instance of a description:
+
+  my $description = Ernst::Description::Bar->new( name => 'my_bar' );
+
+Inspect the type:
+
+  $description->type_isa('Foo');    # yes
+  $description->type_isa('Bar');    # yes
+  $description->type_isa('');       # yes
+  $description->type_isa('String'); # no
+
+  my @types = $description->types; # '', 'Foo', 'Bar'
+
+Or do something for each supertype:
+
+  my $baz = Bazify->new(
+      description => $description,
+      data        => { some => 'data' },
+  );
+
+  given($description->types) {
+      when('Foo')  { $baz->frob_foo;  continue }
+      when('Bar')  { $baz->frob_bar;  continue }
+      when('Quux') { $baz->frob_quux; continue }
+  }
+
+  $baz->to_exception_if_gorch;
+
+You can also find other types that C<type_isa> this type.  This is
+useful for building metadescriptions from the metadescription
+metadescription:
+
+  package Quux;
+  extends 'Ernst::Description::Bar';
+
+  my @subtypes = Ernst::Description::Foo->subtypes; # 'Bar', 'Quux'
+
+=head1 ATTRIBUTES
+
+=head2 name
+
+The name of this attribute.
+
+=head2 type
+
+The name of this attribute's type.
+
+=head2 is_mutable
+
+Whether this attribute can be modified after construction.
+
+=head1 METHODS
+
+Note: the type methods are "relative" to C<Ernst::Description>.  For
+example, C<Ernst::Description::Foo> has the type 'Foo'.
+
+=head2 type_isa( $String )
+
+Returns true if this attribute's type isa C<$String>.
+
+=head2 subtypes
+
+Returns a list of types that extend this attribute's type.
+
+XXX: move to metaclass
+
+=head2 types
+
+Returns a list of types that this attribute's type inherits from.
+
+XXX: move to metaclass
+
+

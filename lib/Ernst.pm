@@ -31,3 +31,44 @@ __END__
 Ernst - a metadescription framework for Moose classes
 
 =head1 SYNOPSIS
+
+Create a metadescribable Moose class:
+
+  package User;
+  use Ernst;
+
+  has 'fullname' => (
+      traits      => ['MetaDescription'],
+      is          => 'ro',
+      isa         => 'Str',
+      description => {
+          type       => 'String',
+          min_length => 1,
+      }
+  );
+
+  has 'biography' => (
+      traits      => ['MetaDescription'],
+      is          => 'ro',
+      isa         => 'Str',
+      description => {
+          type            => 'String',
+          min_length      => 1,
+          expected_length => 3000, # 500-words is average
+      }
+  );
+
+Then introspect its metadescription:
+
+  my $user_md = User->meta->metadescription;
+
+  foreach my $name ($user_md->get_attribute_list) {
+     my $attribute = $user_md->get_attribute($name);
+     say $attribute->name, ': ', $attribute->type;
+  }
+
+You can also inspect attributes directly (via their metaclass):
+
+  my $fullname_md = User->meta->get_attribute_map->{fullname}->metadescription;
+  say 'The fullname is a ', $fullname->type;
+
