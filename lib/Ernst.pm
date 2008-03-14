@@ -69,6 +69,6 @@ Then introspect its metadescription:
 
 You can also inspect attributes directly (via their metaclass):
 
-  my $fullname_md = User->meta->get_attribute_map->{fullname}->metadescription;
+  my $fullname_md = User->meta->get_attribute('fullname')->metadescription;
   say 'The fullname is a ', $fullname->type;
 
