@@ -1,6 +1,5 @@
 package Ernst::Description::Collection;
 use Ernst;
-use Moose;
 use Ernst::TypeLibrary;
 use Sub::AliasedUnderscore qw(transformed);
 

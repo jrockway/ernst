@@ -1,6 +1,5 @@
 package Ernst::Description::Container;
 use Ernst;
-use Moose;
 use MooseX::AttributeHelpers;
 use Data::Thunk 'lazy';
 

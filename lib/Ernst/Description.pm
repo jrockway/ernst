@@ -1,6 +1,5 @@
 package Ernst::Description;
 use Ernst;
-use Moose;
 
 my $PACKAGE      = __PACKAGE__;
 my $SHORTEN_TYPE = qr/^${PACKAGE}::(.+)$/;

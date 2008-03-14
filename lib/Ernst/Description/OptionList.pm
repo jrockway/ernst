@@ -1,6 +1,5 @@
 package Ernst::Description::OptionList;
 use Ernst;
-use Moose;
 use Ernst::Description::String;
 
 extends 'Ernst::Description';

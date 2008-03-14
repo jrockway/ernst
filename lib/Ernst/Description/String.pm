@@ -1,6 +1,5 @@
 package Ernst::Description::String;
 use Ernst;
-use Moose;
 
 extends 'Ernst::Description';
 

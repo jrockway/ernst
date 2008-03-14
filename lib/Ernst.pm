@@ -1,16 +1,22 @@
 package Ernst;
 
-require Moose;
+use Moose;
 use Ernst::Meta::Class;
 use Ernst::Meta::Attribute;
 
 sub import {
     my $caller = caller;
+    
+    strict->import;
+    warnings->import;
+    
     Moose::init_meta(
         $caller, 
         undef, # Moose::Object
         'Ernst::Meta::Class'
     );
+    
+    Moose->import({ into => $caller });
 }
 
 package Moose::Meta::Attribute::Custom::Trait::MetaDescription;

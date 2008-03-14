@@ -1,6 +1,5 @@
 package Ernst::Meta::Class;
 use Moose;
-use Ernst;
 use Moose::Util::TypeConstraints;
 
 extends 'Moose::Meta::Class';

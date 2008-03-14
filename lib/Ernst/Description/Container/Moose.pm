@@ -1,5 +1,4 @@
 package Ernst::Description::Container::Moose;
-use Ernst;
 use Moose;
 use MooseX::AttributeHelpers;
 
