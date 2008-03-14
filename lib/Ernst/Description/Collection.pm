@@ -4,16 +4,7 @@ use Ernst::TypeLibrary;
 use Sub::AliasedUnderscore qw(transformed);
 
 extends 'Ernst::Description';
-
-has 'description' => (
-    isa         => 'Ernst::Description',
-    is          => 'ro',
-    required    => 1,
-    traits      => ['MetaDescription'],
-    description => {
-        type => 'String',
-    },
-);
+with    'Ernst::Description::Collection::Base';
 
 has 'cardinality' => (
     isa         => 'ContainerCardinality',
