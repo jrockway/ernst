@@ -2,7 +2,6 @@ package Ernst::TypeLibrary;
 use Moose;
 
 use Moose::Util::TypeConstraints;
-use Ernst::Type;
 
 subtype 'ContainerCardinality'
   => as 'Str',

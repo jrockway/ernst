@@ -2,16 +2,62 @@ package Ernst::Meta::Attribute;
 use Moose::Role;
 use Moose::Util ();
 
+my $LITERAL_CLASS = qr/^[+](.+)$/;
+
 sub _get_type_class {
     my $type = shift;
 
-    confess "type must be a string, not a $type"
-      if ref $type;
+    # +Literal::Type::Class
+    return $1 if $type =~ /$LITERAL_CLASS/o;
     
-    my $class = "Ernst::Description::$type";
-    Class::MOP::load_class($class);
+    # Ernst::Description::$type
+    if(!ref $type){
+        my $class = "Ernst::Description::$type";
+        Class::MOP::load_class($class);
+        return $class;
+    }
+
+    # <some instance of Ernst::Description subclass>
+    else {
+        confess "type must be a Ernst::Description, not a $type"
+          unless $type->isa('Ernst::Description');
+        return _get_type_class('+'. ref $type);
+    }
+}
+
+sub _guess_type {
+    my $self = shift;
+
+    my $MOOSE_ERNST_TYPEMAP = {
+        Str      => { type => 'String'          },
+        Int      => { type => 'Integer'         },
+        Bool     => { type => 'Boolean'         },
+        ArrayRef => { type => 'Collection'      },
+        HashRef  => { type => 'Collection::Map' },
+    };
+
+    my $isa = $self->_isa_metadata;
+    (my ($outer, $inner)) = $isa =~ /^(.+)(\[.+\])?$/;
     
-    return $class;
+    for($MOOSE_ERNST_TYPEMAP->{$outer}){
+        if($_){
+            if($inner){
+                my $inner_type = _get_type_class(_guess_type($inner));
+                $_->{description} = $inner_type;
+                $_->{cardinality} = '*';
+            }
+            return $_;
+        }
+    }
+
+    if($isa->isa('UNIVERSAL') && $isa->can('meta') && $isa->meta->can('metadescription')){
+        return { 
+            type                => 'Wrapper',
+            wrapped_description => $isa->meta->metadescription,
+        },
+    }
+    
+    confess "cannot map moose type '$isa' to an Ernst type";
 }
 
 has 'metadescription' => (
@@ -22,7 +68,6 @@ has 'metadescription' => (
     default  => sub {
         require Ernst::Description::Moose;
         require Ernst::Meta::Class;
-        
         my $self = shift;
 
         my @traits = (
@@ -31,10 +76,17 @@ has 'metadescription' => (
         );
         
         my $desc = $self->description;
-        
-        my $type = $desc->{type} or confess
-          "The attribute '", $self->name, "' must have a type in its description";
+
+        if(!$desc->{type}){
+            $desc = { %{$self->_guess_type}, %$desc };
+        }
+
+        my $type = $desc->{type} or
+          confess
+            "The attribute '", $self->name, "' must have a type in its description";
+
         my $base = _get_type_class($type);
+        $desc->{type} = $base;
 
         my $class = Ernst::Meta::Class->create_anon_class(
             superclasses => [$base],
@@ -42,6 +94,7 @@ has 'metadescription' => (
             cache        => 1,
         );
 
+        delete $desc->{type}; # let type calculate itself
         return $class->name->new(
             attribute  => $self, 
             name       => $self->name,
@@ -54,9 +107,9 @@ has 'metadescription' => (
 );
 
 has 'description' => (
-    is            => 'ro',
-    isa           => 'HashRef',
-    required      => 1,
+    is      => 'ro',
+    isa     => 'HashRef',
+    default => sub { +{} }, # we can guess everything now
 );
 
 has 'trait_class_names' => (
@@ -69,7 +122,7 @@ has 'trait_class_names' => (
         return [
             map {
                 my $trait_class;
-                if(/^[+](.+)$/){
+                if(/$LITERAL_CLASS/o){
                     $trait_class = $1;
                 }
                 else {

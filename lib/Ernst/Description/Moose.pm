@@ -14,3 +14,4 @@ __END__
 =head1 NAME
 
 Ernst::Description::Moose
+

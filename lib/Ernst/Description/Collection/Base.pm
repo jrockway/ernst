@@ -2,6 +2,7 @@ package Ernst::Description::Collection::Base;
 use Moose::Role;
 
 require Ernst::Meta::Attribute;
+use Data::Thunk;
 
 has 'description' => (
     isa         => 'Ernst::Description',
@@ -9,8 +10,11 @@ has 'description' => (
     required    => 1,
     traits      => ['MetaDescription'],
     description => {
-        # ???
-        type => '+Ernst::Description',
+        # XXX: i don't think so
+        type                => 'Wrapper',
+        wrapped_description => lazy {
+            Ernst::Description->meta->metadescription;
+        },
     },
 );
 
