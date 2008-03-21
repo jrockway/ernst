@@ -23,7 +23,14 @@ sub type_isa {
 };
 
 sub subtypes {
-    
+    my $self = shift;
+    my $class = $self->name;
+
+    no strict 'refs';
+    return $self->type,
+      map { my $p = "${class}::". substr $_,0,-2; eval { $p->meta->subtypes } } 
+        grep { /^(.+)::$/ } 
+          keys %{$class . '::'};
 }
 
 sub types {
