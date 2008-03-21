@@ -16,7 +16,7 @@ has 'attributes' => (
     },
     traits        => ['MetaDescription'],
     description   => {
-        type        => 'Collection',
+        type        => 'Collection::Map',
         description => lazy {
             Ernst::Description->meta->metadescription;
         },

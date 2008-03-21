@@ -10,11 +10,7 @@ has 'description' => (
     required    => 1,
     traits      => ['MetaDescription'],
     description => {
-        # XXX: i don't think so
-        type                => 'Wrapper',
-        wrapped_description => lazy {
-            Ernst::Description->meta->metadescription;
-        },
+        type => '',
     },
 );
 
