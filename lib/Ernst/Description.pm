@@ -54,12 +54,12 @@ Then get an instance of a description:
 
 Inspect the type:
 
-  $description->type_isa('Foo');    # yes
-  $description->type_isa('Bar');    # yes
-  $description->type_isa('');       # yes
-  $description->type_isa('String'); # no
+  $description->meta->type_isa('Foo');    # yes
+  $description->meta->type_isa('Bar');    # yes
+  $description->meta->type_isa('');       # yes
+  $description->meta->type_isa('String'); # no
 
-  my @types = $description->types; # '', 'Foo', 'Bar'
+  my @types = $description->meta->types; # '', 'Foo', 'Bar'
 
 Or do something for each supertype:
 
@@ -68,7 +68,7 @@ Or do something for each supertype:
       data        => { some => 'data' },
   );
 
-  given($description->types) {
+  given($description->meta->types) {
       when('Foo')  { $baz->frob_foo;  continue }
       when('Bar')  { $baz->frob_bar;  continue }
       when('Quux') { $baz->frob_quux; continue }
@@ -83,7 +83,7 @@ metadescription:
   package Quux;
   extends 'Ernst::Description::Bar';
 
-  my @subtypes = Ernst::Description::Foo->subtypes; # 'Bar', 'Quux'
+  my @subtypes = Ernst::Description::Foo->meta->subtypes; # 'Bar', 'Quux'
 
 =head1 ATTRIBUTES
 
@@ -91,33 +91,50 @@ metadescription:
 
 The name of this attribute.
 
-=head2 type
-
-The name of this attribute's type.
-
 =head2 is_mutable
 
 Whether this attribute can be modified after construction.
 
-=head1 METHODS
+=head1 METACLASS METHODS
 
-Note: the type methods are "relative" to C<Ernst::Description>.  For
-example, C<Ernst::Description::Foo> has the type 'Foo'.
+See also L<Ernst::Meta::Description::Type>.
+
+All of the type methods described below return results that are
+"relative" to C<Ernst::Description>.  For example, C<type> will return
+'Foo' when invoked on a C<Ernst::Description::Foo>.
+C<Ernst::Description> has the type C<''> (the empty string).
+
+The use of the word "type" below might be confusing.  It refers to the
+type of the described attribute (or class), not the type of the
+description class.  (The type of the description class can be accessed
+by accessing the description's metadescription.  Hopefully you won't
+need to do this.)
+
+=head2 type
+
+Returns the type.  
+
+   Ernst::Description::String->meta->type; # returns "String"
 
 =head2 type_isa( $String )
 
-Returns true if this attribute's type isa C<$String>.
+Returns true if this type isa C<$String>.
+
+  Ernst::Description::String->meta->type_isa('String');  # True
+  Ernst::Description::String->meta->type_isa('');        # True
+  Ernst::Description::String->meta->type_isa('Integer'); # False
 
 =head2 subtypes
 
 Returns a list of types that extend this attribute's type.
 
-XXX: move to metaclass
+  Ernst::Description->meta->subtypes; # String, Integer, Boolean, etc.
 
 =head2 types
 
 Returns a list of types that this attribute's type inherits from.
 
-XXX: move to metaclass
+  Ernst::Description::String->meta->types; # ''
+  Ernst::Description::String::ReallyLong->meta->types; # '', 'String'
 
-
+  
