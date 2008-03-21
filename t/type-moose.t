@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 7;
+use Test::More tests => 8;
 use Test::Exception;
 
 { package Class;
@@ -18,6 +18,8 @@ ok my $m = Class->meta->get_attribute('a')->metadescription;
 
 is $m->meta->type, 'String', 'type mapped ok';
 
+is_deeply [sort $m->meta->types], [sort '', 'String'], 'right hierarchy';
+
 # check all the cases
 
 my $metaclass = Moose::Meta::Class->create_anon_class(
@@ -34,3 +36,4 @@ lives_ok {
     is $meta->metadescription->meta->type, 'Wrapper', 'attr type is Wrapper';
     isa_ok $meta->metadescription, 'Ernst::Description::Wrapper';
 };
+
