@@ -22,8 +22,8 @@ ok $md;
 is_deeply [sort $md->get_attribute_list], [sort 'attributes', 'name'];
 
 my $name = $md->get_attribute('name');
-is $name->type, 'String';
+is $name->meta->type, 'String';
 
 my $name2 = Ernst::Description->meta->
   get_attribute('name')->metadescription;
-is $name2->type, 'String';
+is $name2->meta->type, 'String';

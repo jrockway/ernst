@@ -2,6 +2,7 @@ package Ernst;
 
 use Moose;
 use Ernst::Meta::Class;
+use Ernst::Meta::Description::Class;
 use Ernst::Meta::Attribute;
 
 sub import {
@@ -9,11 +10,17 @@ sub import {
     
     strict->import;
     warnings->import;
-    
+
+    # i should probably make descriptions "use Ernst::Description" or something
+    # instead
+    my $mc = $caller =~ /^Ernst::Description/ ?
+      'Ernst::Meta::Description::Class' :
+      'Ernst::Meta::Class';
+
     Moose::init_meta(
         $caller, 
         undef, # Moose::Object
-        'Ernst::Meta::Class'
+        $mc,
     );
     
     Moose->import({ into => $caller });

@@ -78,11 +78,11 @@ sub attributes {
     my @result;
     foreach my $name ($container->get_attribute_list) {
         my $attr = $container->get_attribute($name);
-        if($attr->type eq 'Collection'){
+        if($attr->meta->type eq 'Collection'){
             push @result, [ $name => [ attributes($attr->description) ]];
         }
         else {
-            push @result, [ $name => $attr->type ];
+            push @result, [ $name => $attr->meta->type ];
         }
     }
     return @result;

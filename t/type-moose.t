@@ -16,7 +16,7 @@ use Test::Exception;
 ok (Class->meta->metadescription);
 ok my $m = Class->meta->get_attribute('a')->metadescription;
 
-is $m->type, 'String', 'type mapped ok';
+is $m->meta->type, 'String', 'type mapped ok';
 
 # check all the cases
 
@@ -31,6 +31,6 @@ lives_ok {
     );
     
     is $meta->metadescription->name, 'test', 'attr name is test';
-    is $meta->metadescription->type, 'Wrapper', 'attr type is Wrapper';
+    is $meta->metadescription->meta->type, 'Wrapper', 'attr type is Wrapper';
     isa_ok $meta->metadescription, 'Ernst::Description::Wrapper';
 };

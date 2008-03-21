@@ -67,7 +67,7 @@ has 'metadescription' => (
     weak_ref => 1,
     default  => sub {
         require Ernst::Description::Moose;
-        require Ernst::Meta::Class;
+        require Ernst::Meta::Description::Class;
         my $self = shift;
 
         my @traits = (
@@ -88,7 +88,7 @@ has 'metadescription' => (
         my $base = _get_type_class($type);
         $desc->{type} = $base;
 
-        my $class = Ernst::Meta::Class->create_anon_class(
+        my $class = Ernst::Meta::Description::Class->create_anon_class(
             superclasses => [$base],
             roles        => [@traits],
             cache        => 1,

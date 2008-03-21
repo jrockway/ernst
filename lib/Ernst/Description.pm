@@ -14,26 +14,6 @@ has 'name' => (
     },
 );
 
-has 'type' => (
-    is          => 'ro',
-    isa         => 'Str',
-    required    => 1,
-    traits      => ['MetaDescription'],
-    description => {
-        type => 'String',
-    },
-    default     => sub {
-        my $self  = shift;
-        
-        for my $c (ref $self, $self->meta->superclasses) {
-            return $1 if $c =~ /$SHORTEN_TYPE/o;
-        }
-        
-        confess 'Something has gone horribly wrong; cannot guess the type of ',
-          ref $self;
-    }
-);
-
 has 'is_mutable' => (
     is          => 'ro',
     isa         => 'Bool',
@@ -43,21 +23,6 @@ has 'is_mutable' => (
     },
     default  => sub { 0 },
 );
-
-sub type_isa {
-    my ($self, $compare) = @_;
-    grep { /^$compare$/ } $self->types;
-};
-
-sub subtypes {
-    
-}
-
-sub types {
-    my $self = shift;
-    my $p = __PACKAGE__; # this package is the stopping point for search up @ISA
-    map { /$SHORTEN_TYPE/o; $1||'' } grep { $_->isa($p) } $self->meta->linearized_isa;
-}
 
 1;
 

@@ -55,7 +55,7 @@ my $desc = $container->get_attribute('attribute');
 ok $desc, 'got description for attribute';
 
 is $desc->name, 'attribute', 'correct name';
-is $desc->type, 'String', 'correct type';
+is $desc->meta->type, 'String', 'correct type';
 
 ok $desc->does('Ernst::Description::Trait::DoesThisWork'),
   'applied DoesThisWork trait ok';
