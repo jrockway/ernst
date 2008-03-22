@@ -44,7 +44,7 @@ sub interpret_attribute {
     my $next = sub { confess "Attempt to 'next' above the top level!" };
     for my $this (map { $self->handler($_) } @types){
         my $old_next = $next;
-        $next = sub { $this->($old_next, $_[0]) };
+        $next = sub { unshift @_, $old_next; goto $this };
     }
     
     return $next->($attr);
