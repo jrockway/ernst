@@ -2,6 +2,7 @@ package Ernst::Interpreter;
 use Ernst;
 use MooseX::AttributeHelpers;
 use List::MoreUtils qw(uniq);
+use Sub::Name;
 
 has 'handlers' => (
     metaclass => 'Collection::Hash',
@@ -41,7 +42,8 @@ sub interpret_attribute {
             unless @utypes == @types;
     }
 
-    my $next = sub { confess "Attempt to 'next' above the top level!" };
+    my $next = subname '<Ernst interpreter>::invalid_next' =>
+      sub { confess "Attempt to 'next' above the top level!" };
     for my $this (map { $self->handler($_) } @types){
         my $old_next = $next;
         $next = sub { unshift @_, $old_next; goto $this };
