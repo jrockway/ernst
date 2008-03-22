@@ -7,7 +7,9 @@ has 'handlers' => (
     metaclass => 'Collection::Hash',
     isa       => 'HashRef[CodeRef]',
     default   => sub { 
-        "" => sub { warn 'Reached default root action!'; return },
+        +{
+            "" => sub { warn 'Reached default root action!'; return },
+        };
     },
     provides => {
         get    => 'handler',
@@ -29,23 +31,23 @@ sub interpret {
 
 sub interpret_attribute {
     my ($self, $attr) = @_;
-    warn join ':', $attr->meta->types;
-    my @types = uniq reverse grep { $self->handler_exists($_) } $attr->meta->types;
+
+    my @types = reverse grep { $self->handler_exists($_) } $attr->meta->types;
     
-    warn join '<->', map { "'$_'". (defined $_ ? 'YES' : 'NO') } @types;
+    {
+        my @utypes = uniq @types;
+        confess 'some types are repeated in the type graph for '. 
+          $attr->meta->type. '!!!'
+            unless @utypes == @types;
+    }
 
-    my @handlers = ( (map { warn $_; $self->handler($_) } @types), 
-                     sub { confess "There is no next handler!" } );
-    warn "OH NOES";
-    warn @handlers;
-
-    my $i = 0;
-    use Moose::Autobox;
-    return sub {
-        my ($self, $attr) = @_;
-        warn "Running iteration $i on $self ($attr)";
-        $handlers[$i]->( sub { my ($attr) = @_; $i++; $self->($attr) }, $attr );
-    }->y->($attr);
+    my $next = sub { confess "Attempt to 'next' above the top level!" };
+    for my $this (map { $self->handler($_) } @types){
+        my $old_next = $next;
+        $next = sub { $this->($old_next, $_[0]) };
+    }
+    
+    return $next->($attr);
 }
 
 1;
