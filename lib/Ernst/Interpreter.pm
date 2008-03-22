@@ -13,7 +13,7 @@ has 'handlers' => (
         };
     },
     provides => {
-        get    => 'handler',
+        get    => 'get_handler',
         exists => 'handler_exists',
     },
 );
@@ -44,7 +44,7 @@ sub interpret_attribute {
 
     my $next = subname '<Ernst interpreter>::invalid_next' =>
       sub { confess "Attempt to 'next' above the top level!" };
-    for my $this (map { $self->handler($_) } @types){
+    for my $this (map { $self->get_handler($_) } @types){
         my $old_next = $next;
         $next = sub { unshift @_, $old_next; goto $this };
     }
