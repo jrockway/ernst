@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::Exception;
-use Test::More tests => 7;
+use Test::More tests => 13;
 
 {
     package Class;
@@ -22,10 +22,11 @@ use ok 'Ernst::Interpreter';
 
 my $top;
 my $string;
+my $continue_after_top = 0;
 
 my $basic = Ernst::Interpreter->new(
     handlers => {
-        ""      => sub { $top = [ @_ ] },
+        ""      => sub { $top = [ @_ ]; $continue_after_top && $_[0]->() },
         String  => sub { 
             my ($next, $attr) = @_; 
             $string = [ @_ ];
@@ -49,3 +50,17 @@ is_deeply $string, [
 is_deeply $top, [$top->[0], 1234], 'got new attr and next-next coderef';
 
 dies_ok { $top->[0]->() } 'calling top next fails';
+
+# check that handlers have good names in stack trace
+
+$continue_after_top = 1;
+eval { $basic->interpret(Class->meta->metadescription) };
+my $stack = $@;
+ok $stack, 'got stack trace';
+
+my @lines = split /$/m, $stack;
+like $lines[0], qr/^Attempt to 'next'/;
+like $lines[1], qr/<Ernst interpreter>::invalid_next/;
+like $lines[2], qr/<Ernst interpreter>::__HANDLER__::Top_Level/;
+like $lines[3], qr/<Ernst interpreter>::__HANDLER__::String/;
+unlike $lines[4], qr/__HANDLER__/, q{that's all of the handlers};

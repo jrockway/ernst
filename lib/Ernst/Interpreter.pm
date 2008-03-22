@@ -13,10 +13,21 @@ has 'handlers' => (
         };
     },
     provides => {
+        keys   => 'available_handlers',
         get    => 'get_handler',
         exists => 'handler_exists',
     },
 );
+
+sub BUILD {
+    my $self = shift;
+    for my $name ($self->available_handlers){
+        my $handler = $self->get_handler($name);
+        $name ||= 'Top_Level';
+        subname "<Ernst interpreter>::__HANDLER__::$name" =>
+          $handler;
+    }
+}
 
 sub interpret {
     my $self = shift;
