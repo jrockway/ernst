@@ -26,7 +26,9 @@ has '+attributes' => (
     lazy    => 1,
     default => sub {
         my $self = shift;
-        my %map = %{$self->class->get_attribute_map};
+        my @attrs = $self->class->compute_all_applicable_attributes;
+        my %map = map { $_->name => $_ } @attrs;
+
         my @have_descriptions = grep { 
             # XXX: does_role seems to not work here; checking "can" instead
             # which is rather flaky
