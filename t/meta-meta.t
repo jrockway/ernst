@@ -4,7 +4,6 @@ use Test::More tests => 4;
 
 { package Foo;
   use Ernst;
-  use Moose;
 
   has 'a' => (
       is          => 'ro',

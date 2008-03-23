@@ -6,28 +6,32 @@ my $LITERAL_CLASS = qr/^[+](.+)$/;
 
 sub _get_type_class {
     my $type = shift;
+    confess 'No type provided' unless defined $type;
 
-    # +Literal::Type::Class
-    return $1 if $type =~ /$LITERAL_CLASS/o;
-    
-    # Ernst::Description::$type
-    if(!ref $type){
-        my $class = "Ernst::Description::$type";
-        Class::MOP::load_class($class);
-        return $class;
+    my $class;
+    if(ref $type){
+        return $type;
     }
-
-    # <some instance of Ernst::Description subclass>
+    elsif($type =~ /$LITERAL_CLASS/o){
+        # +Literal::Type::Class
+        $class = $1;
+    }
     else {
-        confess "type must be a Ernst::Description, not a $type"
-          unless $type->isa('Ernst::Description');
-        return _get_type_class('+'. ref $type);
+        if($type ne ''){
+            $class = "Ernst::Description::$type";
+        }
+        else {
+            $class = 'Ernst::Description';
+        }
     }
+
+    Class::MOP::load_class($class);
+    return $class;
 }
 
 sub _guess_type {
     my $self = shift;
-
+   
     my $MOOSE_ERNST_TYPEMAP = {
         Str      => { type => 'String'          },
         Int      => { type => 'Integer'         },
@@ -39,21 +43,20 @@ sub _guess_type {
     my $isa = $self->_isa_metadata;
     (my ($outer, $inner)) = $isa =~ /^(.+)(\[.+\])?$/;
     
-    for($MOOSE_ERNST_TYPEMAP->{$outer}){
-        if($_){
-            if($inner){
-                my $inner_type = _get_type_class(_guess_type($inner));
-                $_->{description} = $inner_type;
-                $_->{cardinality} = '*';
-            }
-            return $_;
+    if(my $outer_type = $MOOSE_ERNST_TYPEMAP->{$outer}){
+        if($inner){
+            my $inner_type = _get_type_class(_guess_type($inner));
+            $outer_type->{inside_type} = $inner_type;
+            $outer_type->{cardinality} = '*';
         }
+        return $outer_type;
     }
-
-    if($isa->isa('UNIVERSAL') && $isa->can('meta') && $isa->meta->can('metadescription')){
-        return { 
-            type                => 'Wrapper',
-            wrapped_description => $isa->meta->metadescription,
+    
+    if($isa->isa('UNIVERSAL') && 
+         $isa->can('meta') && 
+           $isa->meta->can('metadescription')){
+        return +{ 
+            type => $isa->meta->metadescription,
         },
     }
     
@@ -64,7 +67,7 @@ has 'metadescription' => (
     is       => 'ro',
     isa      => 'Ernst::Description',
     lazy     => 1,
-    weak_ref => 1,
+    weak_ref => 1, # created description points back to us via attribute key
     default  => sub {
         require Ernst::Description::Moose;
         require Ernst::Meta::Description::Class;
@@ -75,27 +78,36 @@ has 'metadescription' => (
             $self->trait_class_names,
         );
         
-        my $desc = $self->description;
+        # we want a private copy
+        my $desc = { %{$self->description} };
 
+        # guess type if one isn't provided
         if(!$desc->{type}){
             $desc = { %{$self->_guess_type}, %$desc };
         }
-
-        my $type = $desc->{type} or
-          confess
-            "The attribute '", $self->name, "' must have a type in its description";
-
-        my $base = _get_type_class($type);
-        $desc->{type} = $base;
+        
+        # validate type
+        for my $t ($desc->{type}){
+            confess 'No type provided for ', $self->name
+              unless $t;
+            
+            confess 'An unblessed reference cannot be used as a type'
+              if ref $t && !blessed $t;
+        
+            confess "You supplied a reference as the type, but $t is not an ",
+                    "Ernst::Description"
+                if ref $t && !$desc->{type}->isa('Ernst::Description');
+        }
+        
+        my $base = _get_type_class(delete $desc->{type});
 
         my $class = Ernst::Meta::Description::Class->create_anon_class(
-            superclasses => [$base],
+            superclasses => [ref $base || $base],
             roles        => [@traits],
             cache        => 1,
         );
-
-        delete $desc->{type}; # let type calculate itself
-        return $class->name->new(
+        
+        my @args = (
             attribute  => $self, 
             name       => $self->name,
             is_mutable => (
@@ -103,7 +115,17 @@ has 'metadescription' => (
             ),
             %$desc
         );
-    },
+        
+        # if an instance was passed, clone it and rebless it into our
+        # new subclass
+        if(ref $base){
+            my $copy = $base->meta->clone_object($base);
+            $class->rebless_instance($copy, @args);
+            return $copy;
+        }
+        # otherwise, create a fresh instance
+        return $class->name->new(@args);
+    }
 );
 
 has 'description' => (

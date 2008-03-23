@@ -21,13 +21,14 @@ use Test::TableDriven (
     type_class => [
         ['String'                      => 'Ernst::Description::String'],
         ['+Ernst::Description::String' => 'Ernst::Description::String'],
-        [Foo->meta->metadescription->get_attribute('bar') =>
-         'Class::MOP::Class::__ANON__::SERIAL::4'],
+        [ Foo->meta->metadescription->get_attribute('bar') =>
+            Foo->meta->metadescription->get_attribute('bar')
+        ],
         ['Collection' => 'Ernst::Description::Collection'],
     ],
     guess => {
         Str => 'String',
-        Foo => 'Wrapper',
+        Foo => Foo->meta->metadescription,
         
     },
 );

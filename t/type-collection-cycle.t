@@ -13,7 +13,7 @@ use Test::More tests => 1;
         isa         => 'Foo',
         description => {
             type        => 'Collection',
-            description => Foo->meta->metadescription,
+            inside_type => '+Foo',
             cardinality => '+',
         },
     );
@@ -23,4 +23,4 @@ use Test::More tests => 1;
 # the below is more of a failure than a success:
 
 my $cycle = Foo->meta->metadescription->get_attribute('parent');
-is $cycle, $cycle->description->get_attribute('parent');
+is $cycle, $cycle->inside_type->get_attribute('parent');

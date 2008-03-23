@@ -17,10 +17,7 @@ has 'attributes' => (
     traits        => ['MetaDescription'],
     description   => {
         type        => 'Collection::Map',
-        description => lazy {
-            Ernst::Description->meta->metadescription;
-        },
-        cardinality => '*',
+        inside_type => '',
     },
 );
 
