@@ -5,11 +5,13 @@ use Data::Thunk 'lazy';
 
 extends 'Ernst::Description';
 
+# this is for the case where a container becomes an attribute of
+# something else, otherwise it will be the same as self->name
 has 'container_name' => (
     is          => 'ro',
     isa         => 'Str',
-    required    => 1,
     traits      => ['MetaDescription'],
+    default     => sub { shift->name },
     description => {
         type => 'String',
     },
