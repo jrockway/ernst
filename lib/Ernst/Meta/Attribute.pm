@@ -46,9 +46,10 @@ sub _guess_type {
     if(my $outer_type = $MOOSE_ERNST_TYPEMAP->{$outer}){
         if($inner){
             my $inner_type = _get_type_class(_guess_type($inner));
-            $outer_type->{inside_type} = $inner_type;
+            $outer_type->{inside_type} = $inner_type->{type};
             $outer_type->{cardinality} = '*';
         }
+
         return $outer_type;
     }
     
