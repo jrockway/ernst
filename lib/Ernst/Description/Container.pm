@@ -5,6 +5,16 @@ use Data::Thunk 'lazy';
 
 extends 'Ernst::Description';
 
+has 'container_name' => (
+    is          => 'ro',
+    isa         => 'Str',
+    required    => 1,
+    traits      => ['MetaDescription'],
+    description => {
+        type => 'String',
+    },
+);
+
 has 'attributes' => (
     reader        => 'get_attribute_map',
     metaclass     => 'Collection::Hash',

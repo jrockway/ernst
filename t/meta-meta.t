@@ -18,7 +18,7 @@ use Test::More tests => 4;
 my $md = Foo->meta->metadescription->meta->metadescription;
 
 ok $md;
-is_deeply [sort $md->get_attribute_list], [sort 'attributes', 'name'];
+is_deeply [sort $md->get_attribute_list], [sort 'attributes', 'container_name', 'name'];
 
 my $name = $md->get_attribute('name');
 is $name->meta->type, 'String';

@@ -10,7 +10,14 @@ has 'class' => (
     required => 1,
 );
 
+# this becomes the attribute name when a class has_a <one of these>
 has '+name' => (
+    lazy    => 1,
+    default => sub { shift->class->name },
+);
+
+# this is always the class name that this container was created from
+has '+container_name' => (
     lazy    => 1,
     default => sub { shift->class->name },
 );
