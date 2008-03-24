@@ -2,7 +2,7 @@ package Ernst::Description::OptionList;
 use Ernst;
 use Ernst::Description::String;
 
-extends 'Ernst::Description';
+extends 'Ernst::Description::Value';
 
 has 'options' => (
     is          => 'ro',

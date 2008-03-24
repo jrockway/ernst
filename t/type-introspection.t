@@ -1,9 +1,10 @@
 use strict;
 use warnings;
 
-use Test::More tests => 21;
+use Test::More tests => 22;
 
 use ok 'Ernst::Description';
+use ok 'Ernst::Description::Value';
 use ok 'Ernst::Description::Container';
 use ok 'Ernst::Description::Container::Moose';
 use ok 'Ernst::Description::String';
@@ -17,9 +18,9 @@ is_deeply
   'no supertypes of the Description';
 
 is_deeply 
-  [Ernst::Description::String->meta->types],
-  ['String', ''],
-  'only Description is a supertype of String';
+  [Ernst::Description::Value->meta->types],
+  ['Value', ''],
+  'only Description is a supertype of Value';
 
 is_deeply 
   [Ernst::Description::Container::Moose->meta->types],
@@ -45,6 +46,6 @@ is_deeply
 
 is_deeply
   [sort Ernst::Description->meta->subtypes],
-  [sort '',qw/Container::Moose Container String Integer Boolean Collection/],
+  [sort '',qw/Container::Moose Container String Integer Boolean Collection Value/],
   'subtypes of Description are correct';
 

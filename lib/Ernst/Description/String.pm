@@ -1,7 +1,7 @@
 package Ernst::Description::String;
 use Ernst;
 
-extends 'Ernst::Description';
+extends 'Ernst::Description::Value';
 
 # min/max length
 

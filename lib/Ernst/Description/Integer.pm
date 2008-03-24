@@ -1,6 +1,6 @@
 package Ernst::Description::Integer;
 use Ernst;
 
-extends 'Ernst::Description';
+extends 'Ernst::Description::Value';
 
 1;
