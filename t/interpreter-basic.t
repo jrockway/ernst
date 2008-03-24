@@ -26,10 +26,10 @@ my $continue_after_top = 0;
 
 my $basic = Ernst::Interpreter->new(
     handlers => {
-        ""      => sub { $top = [ @_ ]; $continue_after_top && $_[0]->() },
+        ""      => sub { shift; $top = [ @_ ]; $continue_after_top && $_[0]->() },
         String  => sub { 
-            my ($next, $attr) = @_; 
-            $string = [ @_ ];
+            my ($reinvoke, $next, $attr) = @_; 
+            $string = [ $next, $attr ];
             $next->(1234); 
             return "OH HAI";
         },
