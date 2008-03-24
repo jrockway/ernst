@@ -1,6 +1,7 @@
 package Ernst::Util;
 use strict;
 use warnings;
+use Module::Pluggable::Object;
 
 use Carp qw(confess);
 
@@ -33,6 +34,14 @@ sub get_type_class {
 
     Class::MOP::load_class($class);
     return $class;
+}
+
+sub load_description_classes {
+    require Module::Pluggable::Object;
+    my $m = Module::Pluggable::Object->new(
+        search_path => ['Ernst::Description'],
+    );
+    eval "require $_" for $m->plugins;
 }
 
 1;
