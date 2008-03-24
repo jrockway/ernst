@@ -15,7 +15,7 @@ coerce InsideType
   => via {
       my $class = Ernst::Util::get_type_class($_);
       #return $class if ref $class;
-      return $class; # ->meta->metadescription;
+      return $class;
   };
 
 has 'inside_type' => (
