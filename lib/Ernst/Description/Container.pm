@@ -10,11 +10,12 @@ extends 'Ernst::Description';
 has 'container_name' => (
     is          => 'ro',
     isa         => 'Str',
-    traits      => ['MetaDescription'],
     default     => sub { shift->name },
-    description => {
-        type => 'String',
-    },
+# commented because this is private-ish
+#    traits      => ['MetaDescription'],
+#    description => {
+#        type => 'String',
+#    },
 );
 
 has 'attributes' => (

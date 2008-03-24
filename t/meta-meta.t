@@ -19,7 +19,7 @@ my $md = Foo->meta->metadescription->meta->metadescription;
 
 ok $md;
 is_deeply [sort $md->get_attribute_list], 
-  [sort qw/is_mutable attributes container_name name/];
+  [sort qw/is_mutable attributes name/];
 
 my $name = $md->get_attribute('name');
 is $name->meta->type, 'String';

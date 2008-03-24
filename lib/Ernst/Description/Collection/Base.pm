@@ -12,10 +12,10 @@ subtype InsideType
 
 coerce InsideType
   => from 'Str'
-  => via { 
+  => via {
       my $class = Ernst::Util::get_type_class($_);
-      return $class if ref $class;
-      return $class->meta->metadescription;
+      #return $class if ref $class;
+      return $class; # ->meta->metadescription;
   };
 
 has 'inside_type' => (

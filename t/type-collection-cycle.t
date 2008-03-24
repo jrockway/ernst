@@ -13,7 +13,7 @@ use Test::More tests => 1;
         isa         => 'Foo',
         description => {
             type        => 'Collection',
-            inside_type => '+Foo',
+            inside_type => Foo->meta->metadescription,
             cardinality => '+',
         },
     );
