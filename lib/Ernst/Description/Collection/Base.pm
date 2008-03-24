@@ -1,8 +1,8 @@
 package Ernst::Description::Collection::Base;
 use Moose::Role;
-use Data::Thunk;
 use Moose::Util::TypeConstraints;
 use Ernst::Meta::Attribute;
+use Ernst::Util;
 
 subtype InsideType
   => as 'Class',
@@ -13,7 +13,7 @@ subtype InsideType
 coerce InsideType
   => from 'Str'
   => via { 
-      my $class = Ernst::Meta::Attribute::_get_type_class($_);
+      my $class = Ernst::Util::get_type_class($_);
       return $class if ref $class;
       return $class->meta->metadescription;
   };

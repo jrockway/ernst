@@ -1,33 +1,7 @@
 package Ernst::Meta::Attribute;
 use Moose::Role;
 use Moose::Util ();
-
-my $LITERAL_CLASS = qr/^[+](.+)$/;
-
-sub _get_type_class {
-    my $type = shift;
-    confess 'No type provided' unless defined $type;
-
-    my $class;
-    if(ref $type){
-        return $type;
-    }
-    elsif($type =~ /$LITERAL_CLASS/o){
-        # +Literal::Type::Class
-        $class = $1;
-    }
-    else {
-        if($type ne ''){
-            $class = "Ernst::Description::$type";
-        }
-        else {
-            $class = 'Ernst::Description';
-        }
-    }
-
-    Class::MOP::load_class($class);
-    return $class;
-}
+use Ernst::Util;
 
 sub _guess_type {
     my $self = shift;
@@ -45,7 +19,7 @@ sub _guess_type {
     
     if(my $outer_type = $MOOSE_ERNST_TYPEMAP->{$outer}){
         if($inner){
-            my $inner_type = _get_type_class(_guess_type($inner));
+            my $inner_type = Ernst::Util::get_type_class(_guess_type($inner));
             $outer_type->{inside_type} = $inner_type->{type};
             $outer_type->{cardinality} = '*';
         }
@@ -100,7 +74,7 @@ has 'metadescription' => (
                 if ref $t && !$desc->{type}->isa('Ernst::Description');
         }
         
-        my $base = _get_type_class(delete $desc->{type});
+        my $base = Ernst::Util::get_type_class(delete $desc->{type});
 
         my $class = Ernst::Meta::Description::Class->create_anon_class(
             superclasses => [ref $base || $base],
@@ -145,6 +119,7 @@ has 'trait_class_names' => (
         return [
             map {
                 my $trait_class;
+                my $LITERAL_CLASS = Ernst::Util::literal_class_regex;
                 if(/$LITERAL_CLASS/o){
                     $trait_class = $1;
                 }

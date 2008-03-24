@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+use Ernst::Util;
 
 BEGIN {
     package My::Attribute;
@@ -35,7 +36,7 @@ use Test::TableDriven (
 
 sub type_class {
     my $input = shift;
-    return Ernst::Meta::Attribute::_get_type_class($input);
+    return Ernst::Util::get_type_class($input);
 }
 
 sub guess {
