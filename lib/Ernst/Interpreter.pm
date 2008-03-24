@@ -34,10 +34,10 @@ has 'handlers' => (
     },
 );
 
-has 'state_class' => (
+has 'context_class' => (
     isa     => 'ClassName',
     is      => 'ro',
-    default => 'Ernst::Interpreter::State',
+    default => 'Ernst::Interpreter::Context',
 );
 
 sub BUILD {
@@ -68,8 +68,8 @@ sub interpret {
             unless @utypes == @types;
     }
 
-    my $context = $self->state_class->new(
-        creator      => $self,
+    my $context = $self->context_class->new(
+        self         => $self,
         initial_type => $attr->meta->type,
     );
     
@@ -84,23 +84,20 @@ sub interpret {
     return $next->($attr);
 }
 
-package Ernst::Interpreter::State;
+package Ernst::Interpreter::Context;
 use Moose;
 
 use overload (
     '&{}' => sub { 
-        my $self    = shift;
-        my $creator = $self->creator;
+        my $self = shift;
         return sub {
-            my $attr = shift;
-            @_ = ($creator, $attr);
-            goto &{ ref($creator) . '::interpret' };
+            $self->reinvoke(@_);
         };
     },
     fallback => 'yes',
 );
 
-has 'creator' => (
+has 'self' => (
     isa      => 'Ernst::Interpreter',
     is       => 'ro',
     required => 1,
@@ -114,7 +111,7 @@ has 'initial_type' => (
 
 sub reinvoke {
     my $self = shift;
-    $self->creator->interpret(@_);
+    $self->self->interpret(@_);
 }
 
 
