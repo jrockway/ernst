@@ -5,13 +5,18 @@ use List::MoreUtils qw(uniq);
 use Sub::Name;
 
 my %default_handlers = (
-    "" => sub { warn 'Reached default root action!'; return },
+    "" => sub { 
+        my $context = shift;
+        warn "Reached default root action for type ",
+          $context->initial_type;
+          
+    },
     "Container" => sub {
-        my ($self, $next, $attr) = @_;
+        my ($context, $next, $attr) = @_;
         my %result;
         foreach my $name ($attr->get_attribute_list){
             my $attr = $attr->get_attribute($name);
-            $result{$name} = $self->($attr);
+            $result{$name} = $context->($attr);
         }
         return \%result;
     }
@@ -27,6 +32,12 @@ has 'handlers' => (
         set    => '_set_handler',
         exists => 'handler_exists',
     },
+);
+
+has 'state_class' => (
+    isa     => 'ClassName',
+    is      => 'ro',
+    default => 'Ernst::Interpreter::State',
 );
 
 sub BUILD {
@@ -49,7 +60,7 @@ sub BUILD {
 sub interpret {
     my ($self, $attr) = @_;
     my @types = reverse grep { $self->handler_exists($_) } $attr->meta->types;
-    
+
     {
         my @utypes = uniq @types;
         confess 'some types are repeated in the type graph for '. 
@@ -57,22 +68,55 @@ sub interpret {
             unless @utypes == @types;
     }
 
-    my $reinvoke = sub {
-        my $attr = shift;
-        @_ = ($self, $attr);
-        goto \&interpret;
-    };
+    my $context = $self->state_class->new(
+        creator      => $self,
+        initial_type => $attr->meta->type,
+    );
     
     my $next = subname '<Ernst interpreter>::invalid_next' =>
       sub { confess "Attempt to 'next' above the top level!" };
 
     for my $this (map { $self->get_handler($_) } @types){
         my $old_next = $next;
-        $next = sub { unshift @_, $reinvoke, $old_next; goto $this };
+        $next = sub { unshift @_, $context, $old_next; goto $this };
     }
     
     return $next->($attr);
 }
+
+package Ernst::Interpreter::State;
+use Moose;
+
+use overload (
+    '&{}' => sub { 
+        my $self    = shift;
+        my $creator = $self->creator;
+        return sub {
+            my $attr = shift;
+            @_ = ($creator, $attr);
+            goto &{ ref($creator) . '::interpret' };
+        };
+    },
+    fallback => 'yes',
+);
+
+has 'creator' => (
+    isa      => 'Ernst::Interpreter',
+    is       => 'ro',
+    required => 1,
+);
+
+has 'initial_type' => (
+    isa      => 'Str',
+    is       => 'ro',
+    required => 1,
+);
+
+sub reinvoke {
+    my $self = shift;
+    $self->creator->interpret(@_);
+}
+
 
 1;
 
