@@ -1,0 +1,1 @@
+* fix the "Can't locate pacakge __ANON__::3 during destruction" in description-predefined.t
