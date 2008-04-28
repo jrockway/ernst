@@ -13,8 +13,7 @@ has 'options' => (
     description => {
         type        => 'Collection',
         cardinality => '+',
-        description => 
-          Ernst::Description::String->meta->metadescription,
+        inside_type => 'String',
     },
 );
 

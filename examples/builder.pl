@@ -18,7 +18,6 @@ BEGIN {
 
   package Language;
   use Ernst;
-  use Moose;
 
   my @str = (
       @MD,
@@ -34,7 +33,6 @@ BEGIN {
   
   package Document;
   use Ernst;
-  use Moose;
 
   has 'primary_language' => (
       @MD,
