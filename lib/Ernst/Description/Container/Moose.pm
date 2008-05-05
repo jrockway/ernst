@@ -31,13 +31,16 @@ has '+attribute_order' => (
         ## Class A: (foo, bar)
         ## Class B (isa A): (foo, baz)
         ## == (foo, bar, baz)
-        for my $a (map { eval { $_->meta->_attribute_order } } 
-                     $self->class->linearized_isa)
-          {
-              next unless $self->get_attribute($a); # skip attributes that don't exist
-              next if $seen{$a}++;                  # skip dupes
-              push @attributes, $a;
-          }
+
+        my @all_applicable_attributes =
+          map { eval { $_->meta->_attribute_order } } 
+            reverse $self->class->linearized_isa;
+
+        for my $a (@all_applicable_attributes){
+            next unless $self->get_attribute($a); # skip attributes that don't exist
+            next if $seen{$a}++;                  # skip dupes
+            push @attributes, $a;
+        }
         return \@attributes;
     },
 );
