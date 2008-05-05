@@ -1,6 +1,7 @@
 package Ernst::Meta::Class;
 use Moose;
 use Moose::Util::TypeConstraints;
+use MooseX::AttributeHelpers;
 
 extends 'Moose::Meta::Class';
 
@@ -18,6 +19,22 @@ has 'metadescription' => (
         );
     },
 );
+
+has '_attribute_order' => (
+    metaclass  => 'Collection::Array',
+    is         => 'ro',
+    isa        => 'ArrayRef',
+    default    => sub { [] },
+    auto_deref => 1,
+    provides   => {
+        push => '_remember_attribute',
+    },
+);
+
+before 'add_attribute' => sub {
+    my ($self, $name, $attribute) = @_;
+    $self->_remember_attribute($name);
+};
 
 1;
 __END__

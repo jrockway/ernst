@@ -18,6 +18,18 @@ has 'container_name' => (
 #    },
 );
 
+has 'attribute_order' => (
+    reader     => 'get_attribute_list',
+    is         => 'ro',
+    isa        => 'ArrayRef[Str]',
+    auto_deref => 1,
+    lazy       => 1,
+    default    => sub {
+        my $self = shift;
+        return [ keys %{$self->get_attribute_map} ];
+    }
+);
+
 has 'attributes' => (
     reader        => 'get_attribute_map',
     metaclass     => 'Collection::Hash',
@@ -25,7 +37,6 @@ has 'attributes' => (
     is            => 'ro',
     provides      => {
         get  => 'get_attribute',
-        keys => 'get_attribute_list',
     },
     traits        => ['MetaDescription'],
     description   => {

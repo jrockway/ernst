@@ -22,6 +22,26 @@ has '+container_name' => (
     default => sub { shift->class->name },
 );
 
+has '+attribute_order' => (
+    default => sub {
+        my $self = shift;
+        $self->get_attribute_map; # vivify attributes;
+        my @attributes;
+        my %seen;
+        ## Class A: (foo, bar)
+        ## Class B (isa A): (foo, baz)
+        ## == (foo, bar, baz)
+        for my $a (map { eval { $_->meta->_attribute_order } } 
+                     $self->class->linearized_isa)
+          {
+              next unless $self->get_attribute($a); # skip attributes that don't exist
+              next if $seen{$a}++;                  # skip dupes
+              push @attributes, $a;
+          }
+        return \@attributes;
+    },
+);
+
 has '+attributes' => (
     lazy    => 1,
     default => sub {
