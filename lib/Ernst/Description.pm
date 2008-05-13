@@ -4,6 +4,14 @@ use Ernst;
 my $PACKAGE      = __PACKAGE__;
 my $SHORTEN_TYPE = qr/^${PACKAGE}::(.+)$/;
 
+extends 'MooseX::MetaDescription::Description';
+
+# NOTE:
+# we should fix this, so
+# that it is required
+# - SL
+has '+descriptor' => (required => 0);
+
 has 'name' => (
     is          => 'ro',
     isa         => 'Str',

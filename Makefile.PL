@@ -9,6 +9,7 @@ requires 'Module::Pluggable::Object';
 requires 'Moose' => '0.45';
 requires 'Moose::Autobox';
 requires 'MooseX::AttributeHelpers';
+requires 'MooseX::MetaDescription';
 requires 'Sub::AliasedUnderscore';
 build_requires 'Test::Exception';
 build_requires 'Test::More';

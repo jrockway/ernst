@@ -1,7 +1,10 @@
 package Ernst::Meta::Attribute;
 use Moose::Role;
+use MooseX::MetaDescription;
 use Moose::Util ();
 use Ernst::Util;
+
+with 'MooseX::MetaDescription::Meta::Trait';
 
 sub _guess_type {
     my $self = shift;
@@ -38,6 +41,10 @@ sub _guess_type {
     confess "cannot map moose type '$isa' to an Ernst type";
 }
 
+has '+metadescription_classname' => (
+    default => sub { 'Ernst::Description::Moose' }
+);
+
 has 'metadescription' => (
     is       => 'ro',
     isa      => 'Ernst::Description',
@@ -49,7 +56,7 @@ has 'metadescription' => (
         my $self = shift;
 
         my @traits = (
-            'Ernst::Description::Moose', # for the attribute attribute
+            $self->metadescription_classname, # for the attribute attribute
             $self->trait_class_names,
         );
         
@@ -83,7 +90,8 @@ has 'metadescription' => (
         );
         
         my @args = (
-            attribute  => $self, 
+            attribute  => $self, # for Ernst::Description::Moose 
+            descriptor => $self, # for MooseX::MetaDescription::Meta::Trait
             name       => $self->name,
             is_mutable => (
                 $self->has_writer || $self->has_accessor
@@ -101,12 +109,6 @@ has 'metadescription' => (
         # otherwise, create a fresh instance
         return $class->name->new(@args);
     }
-);
-
-has 'description' => (
-    is      => 'ro',
-    isa     => 'HashRef',
-    default => sub { +{} }, # we can guess everything now
 );
 
 has 'trait_class_names' => (
