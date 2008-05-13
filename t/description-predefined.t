@@ -4,20 +4,22 @@ use Test::More tests => 11;
 
 # test using an object as the description type
 
-use Ernst::Description::String;
+{
+    package MyStringDescription ;
+    use Moose;
+    extends 'Ernst::Description::String';
 
-my $my_string_meta = Ernst::Meta::Description::Class->create_anon_class(
-    superclasses => [qw/Ernst::Description::String/],
-);
+    sub is_my_string { 1 }
+}
 
-$my_string_meta->add_method(is_my_string => sub { 1 });
 
-my $my_string = $my_string_meta->name->new(
+my $my_string = MyStringDescription->new(
     name       => 'hello string',
     min_length => 8,
 );
 
 {
+
     package Ernst::Description::Trait::Foo;
     use Moose::Role;
 
