@@ -6,7 +6,7 @@ all_from 'lib/Ernst.pm';
 requires 'Data::Thunk';
 requires 'List::MoreUtils';
 requires 'Module::Pluggable::Object';
-requires 'Moose' => '0.39_01';
+requires 'Moose' => '0.45';
 requires 'Moose::Autobox';
 requires 'MooseX::AttributeHelpers';
 requires 'Sub::AliasedUnderscore';

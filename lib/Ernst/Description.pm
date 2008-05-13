@@ -24,6 +24,11 @@ has 'is_mutable' => (
     default  => sub { 0 },
 );
 
+sub apply_role {
+    my ($self, $role, $args) = @_;
+    $role->meta->apply($self, rebless_params => $args || {} );
+}
+
 1;
 
 
@@ -95,6 +100,12 @@ The name of this attribute.
 
 Whether this attribute can be modified after construction.
 
+=head1 METHODS
+
+=head2 apply_role
+
+Applies a role (with optional attribute values) to the instance.
+
 =head1 METACLASS METHODS
 
 See also L<Ernst::Meta::Description::Type>.
@@ -136,5 +147,3 @@ Returns a list of types that this attribute's type inherits from.
 
   Ernst::Description::String->meta->types; # ''
   Ernst::Description::String::ReallyLong->meta->types; # '', 'String'
-
-  
