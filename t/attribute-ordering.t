@@ -7,15 +7,13 @@ use Test::More tests => 4;
     use Moose::Role;
     has 'generation' => ( is => 'ro', isa => 'Int', default => 1 );
 
-    package main; # whatever
-
     my @def = (
         is     => 'ro',
         isa    => 'Str',
         traits => ['MetaDescription'],
     );
 
-    sub mk::desc($) {
+    sub mk::desc($) { # just a hack to save me from typing
         return (
             description => {
                 traits     => ['Generation'],
