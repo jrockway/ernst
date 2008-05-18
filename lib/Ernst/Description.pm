@@ -1,9 +1,6 @@
 package Ernst::Description;
 use Ernst;
 
-my $PACKAGE      = __PACKAGE__;
-my $SHORTEN_TYPE = qr/^${PACKAGE}::(.+)$/;
-
 extends 'MooseX::MetaDescription::Description';
 
 # NOTE:
