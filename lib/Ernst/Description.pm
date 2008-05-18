@@ -29,8 +29,12 @@ has 'is_mutable' => (
     default  => sub { 0 },
 );
 
+# NOTE:
+# make this accept a non-absolute name
+# -JR
 sub apply_role {
     my ($self, $role, $args) = @_;
+    Class::MOP::load_class($role);
     $role->meta->apply($self, rebless_params => $args || {} );
 }
 
