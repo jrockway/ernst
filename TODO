@@ -1,1 +1,3 @@
-
+ideas for Interpreter::TT
+ * class defines flavours
+   Interpreter::TT->new( description => 
