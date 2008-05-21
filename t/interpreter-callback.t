@@ -18,13 +18,13 @@ use Test::More tests => 13;
 
 }
 
-use ok 'Ernst::Interpreter';
+use ok 'Ernst::Interpreter::Callback';
 
 my $top;
 my $string;
 my $continue_after_top = 0;
 
-my $basic = Ernst::Interpreter->new(
+my $basic = Ernst::Interpreter::Callback->new(
     handlers => {
         ""      => sub { shift; $top = [ @_ ]; $continue_after_top && $_[0]->() },
         String  => sub { 

@@ -3,8 +3,8 @@ use Moose;
 use Term::ReadLine;
 use feature ':5.10';
 
-extends 'Ernst::Interpreter';
-    
+extends 'Ernst::Interpreter::Callback';
+
 has depth => (
     metaclass => 'Counter',
     isa       => 'Int',
