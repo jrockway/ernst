@@ -35,9 +35,9 @@ sub subtypes {
 
 sub types {
     my $self = shift;
-    return 
+    return
       grep { defined }
-        map { /$SHORTEN_TYPE/o; $1 || (/^Ernst::Description$/ ? '' : undef) } 
+        map { (/$SHORTEN_TYPE/o and $1) || (/^Ernst::Description$/ ? '' : undef) } 
           grep { $_->isa($TOP_PACKAGE) } $self->linearized_isa;
 }
 
