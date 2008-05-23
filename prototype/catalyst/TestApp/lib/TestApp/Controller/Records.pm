@@ -6,6 +6,14 @@ use base 'Catalyst::Controller';
 
 use Ernst::Interpreter::Instantiate;
 
+sub all :Path Args(0) {
+    my ($self, $c) = @_;
+    my $dh = $c->model('Records')->directory->open;
+    my @ids = map { /([\-0-9A-F]+).json/i; $1 } grep { /.json$/ } $dh->read;
+    $c->stash->{ids}      = \@ids;
+    $c->stash->{template} = 'show_all.tt';
+}
+
 sub view :Local Args(1) {
     my ($self, $c, $id) = @_;
     my $record = $c->model('Records')->lookup($id);

@@ -1,0 +1,10 @@
+[% WRAPPER wrapper.tt %]
+<h3>All objects</h3>
+<ul>
+[% FOREACH id IN ids %]
+<li><a href="[% c.uri_for('/records/view', id) %]">[% id %]</a></li>
+[% END %]
+</ul>
+<hr />
+<a href="[% c.uri_for('/records/create') %]">New...</a>
+[% END %]
