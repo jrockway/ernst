@@ -43,7 +43,7 @@ use ok 'Ernst::Interpreter::TT';
           traits     => ['TT'],
           templates  => {
               view => '<div class="long_essay">[% value | html %]</div>',
-              edit => '<div class="rich_text">[% inner %]</div>',
+              edit => '<div class="rich_text">[% next %]</div>',
               # use default test
           },
       },
@@ -72,5 +72,5 @@ my $test = $i->interpret($form, 'test');
 is $test, 'Form<OH HAI>jrockway', 'render as test worked';
 
 my $edit = $i->interpret($form, 'edit', { action => 'ACTION' });
-is $edit, '<form id="edit_class_Form" method="post" action="ACTION"><div class="rich_text">NOT YET IMPLEMENTED</div><label for="username"id="username_label">username</label><input type="text"name="username"id="username"value="jrockway" /></div>',
+is $edit, '<form id="edit_class_Form" method="post" action="ACTION"><div class="rich_text"><label for="biography" id="biography_label">biography</label><input type="text" name="biography" id="biography" value="&lt;OH HAI&gt;" /></div><label for="username" id="username_label">username</label><input type="text" name="username" id="username" value="jrockway" /></form>',
   'render as edit worked';

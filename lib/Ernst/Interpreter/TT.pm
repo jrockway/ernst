@@ -9,6 +9,7 @@ sub flatten($){
     chomp $str;
     $str =~ s/^\s+//g;
     $str =~ s/\s+$//g;
+    $str =~ s/\s+[.](\s+)[.]/$1/g;
     $str =~ s/\n\s*//g;
     return $str;
 }
@@ -41,11 +42,11 @@ has 'default_attribute_templates' => (
                 },
                 edit => flatten q{
                     <label for="[% name | html %]"
-                           id="[% name | html %]_label">[% name | html %]</label>
+                           . .id="[% name | html %]_label">[% name | html %]</label>
                     <input type="text"
-                           name="[% name | html %]"
-                           id="[% name | html %]"
-                           value="[% value | html %]" />
+                           . .name="[% name | html %]"
+                           . .id="[% name | html %]"
+                           . .value="[% value | html %]" />
                 },
             },
         };
@@ -65,7 +66,7 @@ has 'default_class_templates' => (
             view => flatten q{
                 <div id="view_class_[% name | html %]">
                 [% FOREACH attr IN attributes.keys %]
-                  [% attributes.$attr %]
+                [% attributes.$attr %]
                 [% END %]
                 </div>
             },
@@ -74,7 +75,7 @@ has 'default_class_templates' => (
                 [% FOREACH attr IN attributes.keys %]
                   [% attributes.$attr %]
                 [% END %]
-                </div>
+                </form>
             },
         };
     },
@@ -141,20 +142,34 @@ sub _render_template {
 
 sub render_attribute {
     my ($self, $desc, $instance, $flavor, $extra_vars) = @_;
-    my $template = $desc->templates->{$flavor} || 
-      $self->_lookup_attribute_template($desc, $flavor);
-    
-    my $value    = $instance->meta->
-      get_meta_instance->get_slot_value($instance, $desc->name);
+    my @templates = grep { defined }
+      ($desc->templates->{$flavor},
+       map { eval { $self->_lookup_attribute_template_flavors($_)->{$flavor} } } 
+         $desc->meta->types);
 
+    my $next = '';
+    for my $template (reverse @templates){
+        $next = $self->_render_attribute
+          ($desc, $instance, $extra_vars, $template, $next);
+    }
+    return $next;
+}
+
+sub _render_attribute {
+    my ($self, $desc, $instance, $extra_vars, $template, $next) = @_;
+    
+    my $value = $instance->meta->
+      get_meta_instance->get_slot_value($instance, $desc->name);
+    
     return $self->_render_template($template, {
         description => $desc,
         name        => $desc->name,
         attribute   => $desc->attribute,
         value       => $desc->attribute->get_value($instance),
-        inner       => 'NOT YET IMPLEMENTED',
+        next        => $next,
         %{ $extra_vars || {} }, # TODO: warn when this conflicts
     });
+
 }
 
 1;
