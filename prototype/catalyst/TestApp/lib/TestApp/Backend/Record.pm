@@ -21,6 +21,7 @@ has 'uuid' => (
         max_length => 8,
         traits     => ['TT'],
         templates  => {
+            edit => 'uuid: <tt>[% value %]</tt><input type="hidden" name="uuid" value="[% value %]" />',
         },
     }
 );
