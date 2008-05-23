@@ -34,13 +34,19 @@ sub interpret {
     
     my %direct_attributes = %{ $new_attributes->hslice(\@attributes) || {} };
     foreach my $name (@transformable){
-        my $attr   = $self->description->get_attribute($name);
-        my @source = @{ $attr->transform_source };
-        my $rule   = $attr->transform_rule;
+        my $desc   = $self->description->get_attribute($name);
+        my @source = @{ $desc->transform_source };
+        my $rule   = $desc->transform_rule;
 
         $direct_attributes{$name} = $rule->(
             map { $new_attributes->{$_} } @source
         );
+    }
+
+    foreach my $name (keys %direct_attributes){
+        my $desc = $self->description->get_attribute($name);
+        delete $direct_attributes{$name}
+          if $desc->ignore_if->($direct_attributes{$name});
     }
     
     if(!blessed $old_instance){

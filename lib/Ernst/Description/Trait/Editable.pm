@@ -13,4 +13,10 @@ has 'editable' => (
     default => sub { 1 },
 );
 
+has 'ignore_if' => (
+    is      => 'ro',
+    isa     => 'CodeRef',
+    default => sub { sub { 0 } },
+);
+
 1;
