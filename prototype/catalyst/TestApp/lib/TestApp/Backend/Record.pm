@@ -21,7 +21,6 @@ has 'uuid' => (
         max_length => 8,
         traits     => ['TT'],
         templates  => {
-            edit => 'uuid: <tt>[% value %]</tt><input type="hidden" name="uuid" value="[% value %]" />',
         },
     }
 );
@@ -33,11 +32,13 @@ has 'username' => (
     is          => 'ro',
     isa         => 'Str',
     description => {
-        type       => 'String',
-        min_length => 0,
-        max_length => 8,
-        traits     => ['TT'],
-        templates  => {
+        type               => 'String',
+        min_length         => 0,
+        max_length         => 8,
+        traits             => [qw/TT Editable/],
+        initially_editable => 1,
+        editable           => 0,
+        templates          => {
         },
     },
 );
@@ -50,8 +51,20 @@ has 'biography' => (
         type           => 'String',
         min_length     => 0,
         average_length => '3000',
-        traits         => ['TT'],
+        traits         => [qw/TT Editable/],
         templates      => {
+        },
+    },
+);
+
+has 'age' => (
+    traits      => ['MetaDescription'],
+    is          => 'ro',
+    isa         => 'Int',
+    description => {
+        type       => 'Integer',
+        traits     => [qw/TT Editable/],
+        templates  => {
         },
     },
 );

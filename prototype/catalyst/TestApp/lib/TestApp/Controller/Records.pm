@@ -38,7 +38,7 @@ sub create :Local Args(0) {
     if($c->req->method eq 'GET'){
         $c->stash->{flavor} = 'edit';
         $c->stash->{template} = 'edit.tt';
-        $c->stash->{object} = TestApp::Backend::Record->new;
+        $c->stash->{object} = 'TestApp::Backend::Record';
     }
     else {
         my $new = Ernst::Interpreter::Instantiate->new(
