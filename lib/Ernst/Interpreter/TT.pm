@@ -166,8 +166,8 @@ sub _reflavor_attribute {
 sub render_attribute {
     my ($self, $desc, $instance, $flavor, $extra_vars) = @_;
 
-    # if they request edit, but we can't edit this attribuge
-    # use the view template instead
+    # if they request edit, but we can't edit this attribute, use the
+    # view template instead
     $flavor = $self->_reflavor_attribute($desc, $instance, $flavor);
     
     # lookup applicable templates (for "next")
