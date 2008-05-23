@@ -36,7 +36,7 @@ has 'username' => (
         type               => 'String',
         min_length         => 0,
         max_length         => 8,
-        traits             => [qw/TT Editable/],
+        traits             => [qw/TT Editable Friendly/],
         initially_editable => 1,
         editable           => 0,
         templates          => {
@@ -62,8 +62,9 @@ has 'biography' => (
         type           => 'String',
         min_length     => 0,
         average_length => '3000',
-        traits         => [qw/TT Editable/],
+        traits         => [qw/TT Editable Friendly/],
         templates      => {
+            edit => 'Biography: <textarea name="biography">[% value | html %]</textarea>',
         },
     },
 );
@@ -74,7 +75,8 @@ has 'age' => (
     isa         => 'Int',
     description => {
         type       => 'Integer',
-        traits     => [qw/TT Editable/],
+        traits     => [qw/TT Editable Friendly/],
+        label      => 'Current age (years)',
         templates  => {
         },
     },

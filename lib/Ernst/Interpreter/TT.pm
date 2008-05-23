@@ -37,12 +37,12 @@ has 'default_attribute_templates' => (
             "" => {
                 view => flatten q{
                     <div id="[% name | html %]_view">
-                      [% name | html %]: [% value | html %]
+                      [% label | html %]: [% value | html %]
                     </div>
                 },
                 edit => flatten q{
                     <label for="[% name | html %]"
-                           . .id="[% name | html %]_label">[% name | html %]</label>
+                           . .id="[% name | html %]_label">[% label | html %]: </label>
                     <input type="text"
                            . .name="[% name | html %]"
                            . .id="[% name | html %]"
@@ -195,6 +195,7 @@ sub _render_attribute {
     my $stash = {
         description => $desc,
         name        => $desc->name,
+        label       => (eval { $desc->label } || ucfirst $desc->name ),
         attribute   => $desc->attribute,
         value       => (eval { $desc->attribute->get_value($instance) } || ''),
         next        => $next,
