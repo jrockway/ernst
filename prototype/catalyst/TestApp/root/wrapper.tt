@@ -1,0 +1,10 @@
+<html>
+<head>
+<title>[% (title || 'Foo') | html %]</title>
+</head>
+<body>
+<h1>Ernst Demo</h1>
+[% IF title %]<h2>[% title | html %]</h2>[% END %]
+[% content %]
+</body>
+</html>

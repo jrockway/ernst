@@ -1,0 +1,6 @@
+[% WRAPPER wrapper.tt %]
+<h3>Editing object [% object.get_id %]</h3>
+[% object_rendered %]
+<hr />
+<a href="[% c.uri_for('/records/view', object.get_id) %]">View</a>
+[% END %]
