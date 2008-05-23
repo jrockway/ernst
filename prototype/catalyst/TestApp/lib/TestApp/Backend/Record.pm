@@ -31,6 +31,7 @@ has 'username' => (
     traits      => ['MetaDescription'],
     is          => 'ro',
     isa         => 'Str',
+    required    => 1,
     description => {
         type               => 'String',
         min_length         => 0,
@@ -41,6 +42,16 @@ has 'username' => (
         templates          => {
         },
     },
+);
+
+has 'password' => (
+    traits      => ['MetaDescription'],
+    is          => 'ro',
+    isa         => 'Str',
+    required    => 1,
+    description => {
+        type => 'Password',
+    }
 );
 
 has 'biography' => (
