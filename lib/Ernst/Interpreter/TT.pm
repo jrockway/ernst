@@ -184,6 +184,7 @@ sub render_attribute {
         $next = $self->_render_attribute
           ($desc, $instance, $extra_vars, $template, $next);
     }
+
     return $next; # this is the most specific template
 }
 
@@ -194,7 +195,7 @@ sub _render_attribute {
         description => $desc,
         name        => $desc->name,
         attribute   => $desc->attribute,
-        value       => eval { $desc->attribute->get_value($instance) },
+        value       => (eval { $desc->attribute->get_value($instance) } || ''),
         next        => $next,
         %{ $extra_vars || {} }, # TODO: warn when this conflicts
     });
