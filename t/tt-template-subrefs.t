@@ -22,6 +22,8 @@ my $i = 0;
           traits    => ['TT'],
           templates => {
               view => sub {
+                  my $args = shift;
+                  $args->{value} = 'changed';
                   if($i == 0){
                       return '0: [% value %]';
                   }
@@ -36,8 +38,8 @@ my $tt = Ernst::Interpreter::TT->new;
 my $class = Class->new( foo => 'hello' );
 
 my $view_0 = $tt->interpret($class, 'view');
-is $view_0, '<div id="view_class_Class">0: hello<br /></div>';
+is $view_0, '<div id="view_class_Class">0: changed<br /></div>';
 
 $i = 1;
 my $view_1 = $tt->interpret($class, 'view');
-is $view_1, '<div id="view_class_Class">1: hello<br /></div>';
+is $view_1, '<div id="view_class_Class">1: changed<br /></div>';
