@@ -63,7 +63,7 @@ sub BUILD {
 sub build_context {
     my ($self, $attr, @args) = @_;
     return $self->context_class->new(
-        self         => $self,
+        interpreter  => $self,
         initial_type => $attr->meta->type,
         @args,
     );

@@ -11,7 +11,7 @@ use overload (
     fallback => 'yes',
 );
 
-has 'self' => (
+has 'interpreter' => (
     does     => 'Ernst::Interpreter',
     is       => 'ro',
     required => 1,
@@ -25,7 +25,7 @@ has 'initial_type' => (
 
 sub reinvoke {
     my $self = shift;
-    $self->self->interpret(@_);
+    $self->interpreter->interpret(@_);
 }
 
 1;
