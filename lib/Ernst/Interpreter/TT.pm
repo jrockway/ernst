@@ -169,12 +169,13 @@ sub render_attribute {
     # if they request edit, but we can't edit this attribute, use the
     # view template instead
     $flavor = $self->_reflavor_attribute($desc, $instance, $flavor);
-    
+
     # lookup applicable templates (for "next")
-    my @templates = grep { defined }
-      ($desc->templates->{$flavor},
-       map { eval { $self->_lookup_attribute_template_flavors($_)->{$flavor} } }
-         $desc->meta->types);
+    my @templates =
+      grep { defined }
+        ($desc->templates->{$flavor},
+         map { eval { $self->_lookup_attribute_template_flavors($_)->{$flavor} } }
+           $desc->meta->types);
 
     confess "no templates for ". $desc->name unless @templates;
 
@@ -190,15 +191,19 @@ sub render_attribute {
 
 sub _render_attribute {
     my ($self, $desc, $instance, $extra_vars, $template, $next) = @_;
-    
-    return $self->_render_template($template, {
+
+    my $stash = {
         description => $desc,
         name        => $desc->name,
         attribute   => $desc->attribute,
         value       => (eval { $desc->attribute->get_value($instance) } || ''),
         next        => $next,
         %{ $extra_vars || {} }, # TODO: warn when this conflicts
-    });
+    };
+
+    $template = $template->($stash) if ref $template && ref $template eq 'CODE';
+
+    return $self->_render_template($template, $stash);
 
 }
 
