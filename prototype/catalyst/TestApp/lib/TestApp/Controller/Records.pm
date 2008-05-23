@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use base 'Catalyst::Controller';
 
-use Ernst::Interpreter::Instantiate;
+use Ernst::Interpreter::Edit;
 
 sub all :Path Args(0) {
     my ($self, $c) = @_;
@@ -22,6 +22,18 @@ sub view :Local Args(1) {
     $c->stash->{object} = $record;
 }
 
+sub process_submit {
+    my ($self, $c, $obj) = @_;
+
+    my $edit = Ernst::Interpreter::Edit->new(
+        description => TestApp::Backend::Record->meta->metadescription,
+    );
+
+    my $record = $edit->interpret($obj, $c->req->params);
+    $c->model('Records')->store($record);
+    $c->res->redirect($c->uri_for('/records/view', $record->get_id));
+}
+
 sub edit :Local Args(1) {
     my ($self, $c, $id) = @_;
     my $record = $c->model('Records')->lookup($id);
@@ -31,12 +43,7 @@ sub edit :Local Args(1) {
         $c->stash->{object} = $record;
     }
     else {
-        my $new = Ernst::Interpreter::Instantiate->new(
-            description => TestApp::Backend::Record->meta->metadescription,
-        );
-        $record = $new->create_instance($c->req->params);
-        $c->model('Records')->store($record);
-        $c->res->redirect($c->uri_for('/records/view', $record->get_id));
+        $self->process_submit($c, $record);
     }
 }
 
@@ -49,12 +56,7 @@ sub create :Local Args(0) {
         $c->stash->{object} = 'TestApp::Backend::Record';
     }
     else {
-        my $new = Ernst::Interpreter::Instantiate->new(
-            description => TestApp::Backend::Record->meta->metadescription,
-        );
-        my $record = $new->create_instance($c->req->params);
-        $c->model('Records')->store($record);
-        $c->res->redirect($c->uri_for('/records/view', $record->get_id));
+        $self->process_submit($c, undef);
     }
 }
 
