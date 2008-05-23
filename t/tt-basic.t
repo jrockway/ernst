@@ -61,7 +61,7 @@ my $i = Ernst::Interpreter::TT->new;
 ok $i;
 
 my $view = $i->interpret($form, 'view');
-is $view, '<div id="view_class_Form"><div class="long_essay">&lt;OH HAI&gt;</div><b>jrockway</b></div>',
+is $view, '<div id="view_class_Form"><b>jrockway</b><br /><div class="long_essay">&lt;OH HAI&gt;</div><br /></div>',
   'render as view worked';
 
 $i->add_default_attribute_template(
@@ -72,5 +72,4 @@ my $test = $i->interpret($form, 'test');
 is $test, 'Form<OH HAI>jrockway', 'render as test worked';
 
 my $edit = $i->interpret($form, 'edit', { action => 'ACTION' });
-is $edit, '<form id="edit_class_Form" method="post" action="ACTION"><div class="rich_text"><label for="biography" id="biography_label">biography</label><input type="text" name="biography" id="biography" value="&lt;OH HAI&gt;" /></div><label for="username" id="username_label">username</label><input type="text" name="username" id="username" value="jrockway" /></form>',
-  'render as edit worked';
+is $edit, '<form id="edit_class_Form" method="post" action="ACTION"><label for="username" id="username_label">username</label><input type="text" name="username" id="username" value="jrockway" /><br /><div class="rich_text"><label for="biography" id="biography_label">biography</label><input type="text" name="biography" id="biography" value="&lt;OH HAI&gt;" /></div><br /><br /><input type="submit" name="do_submit" value="Submit" /></form>', 'render as edit worked';

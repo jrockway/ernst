@@ -9,7 +9,7 @@ sub flatten($){
     chomp $str;
     $str =~ s/^\s+//g;
     $str =~ s/\s+$//g;
-    $str =~ s/\s+[.](\s+)[.]/$1/g;
+    $str =~ s/\s+[.](\s+)[.]/$1/g; # nice.
     $str =~ s/\n\s*//g;
     return $str;
 }
@@ -65,16 +65,17 @@ has 'default_class_templates' => (
         return +{
             view => flatten q{
                 <div id="view_class_[% name | html %]">
-                [% FOREACH attr IN attributes.keys %]
-                [% attributes.$attr %]
+                [% FOREACH attr IN attribute_order %]
+                [% attributes.$attr %]<br />
                 [% END %]
                 </div>
             },
             edit => flatten q{
                 <form id="edit_class_[% name | html %]" method="post" action="[% action | html %]">
-                [% FOREACH attr IN attributes.keys %]
-                  [% attributes.$attr %]
+                [% FOREACH attr IN attribute_order %]
+                [% attributes.$attr %]<br />
                 [% END %]
+                <br /><input type="submit" name="do_submit" value="Submit" />
                 </form>
             },
         };
@@ -125,10 +126,11 @@ sub interpret {
 
     return $self->_render_template($template, {
         %rendered_attributes,
-        attributes  => \%rendered_attributes,
-        description => $desc,
-        class       => $desc->class,
-        name        => $desc->name,
+        attributes      => \%rendered_attributes,
+        attribute_order => [$desc->get_attribute_list],
+        description     => $desc,
+        class           => $desc->class,
+        name            => $desc->name,
         %{ $extra_vars || {} }, # TODO: warn when this conflicts
     });
 }
@@ -147,6 +149,8 @@ sub render_attribute {
        map { eval { $self->_lookup_attribute_template_flavors($_)->{$flavor} } } 
          $desc->meta->types);
 
+    confess "no templates for ". $desc->name unless @templates;
+    
     my $next = '';
     for my $template (reverse @templates){
         $next = $self->_render_attribute
