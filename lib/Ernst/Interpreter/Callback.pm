@@ -60,8 +60,17 @@ sub BUILD {
     }
 }
 
+sub build_context {
+    my ($self, $attr, @args) = @_;
+    return $self->context_class->new(
+        self         => $self,
+        initial_type => $attr->meta->type,
+        @args,
+    );
+}
+
 sub interpret {
-    my ($self, $attr) = @_;
+    my ($self, $attr, @rest) = @_;
     my @types = reverse grep { $self->handler_exists($_) } $attr->meta->types;
 
     {
@@ -71,10 +80,7 @@ sub interpret {
             unless @utypes == @types;
     }
 
-    my $context = $self->context_class->new(
-        self         => $self,
-        initial_type => $attr->meta->type,
-    );
+    my $context = $self->build_context($attr, @rest);
     
     my $next = subname '<Ernst interpreter>::invalid_next' =>
       sub { confess "Attempt to 'next' above the top level!" };
