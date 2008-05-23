@@ -121,7 +121,7 @@ sub interpret {
         );
     }
 
-    my $template = $desc->templates->{$flavor} || 
+    my $template = $desc->templates->{$flavor} ||
       $self->_lookup_class_template($flavor);
 
     return $self->_render_template($template, {
@@ -131,6 +131,7 @@ sub interpret {
         description     => $desc,
         class           => $desc->class,
         name            => $desc->name,
+        instance        => ref $instance ? $instance : {},
         %{ $extra_vars || {} }, # TODO: warn when this conflicts
     });
 }
@@ -142,34 +143,58 @@ sub _render_template {
     return $output;
 }
 
+sub _reflavor_attribute {
+    my ($self, $desc, $instance, $flavor) = @_;
+
+    if($flavor eq 'edit'){
+        if(!$desc->does('Ernst::Description::Trait::Editable')){
+            return 'view';
+        }
+
+        if(!blessed $instance){
+            return 'view' if !$desc->initially_editable;
+        }
+        else {
+            return 'view' if !$desc->editable;
+        }
+    }
+
+    return $flavor;
+}
+
+
 sub render_attribute {
     my ($self, $desc, $instance, $flavor, $extra_vars) = @_;
+
+    # if they request edit, but we can't edit this attribuge
+    # use the view template instead
+    $flavor = $self->_reflavor_attribute($desc, $instance, $flavor);
+    
+    # lookup applicable templates (for "next")
     my @templates = grep { defined }
       ($desc->templates->{$flavor},
-       map { eval { $self->_lookup_attribute_template_flavors($_)->{$flavor} } } 
+       map { eval { $self->_lookup_attribute_template_flavors($_)->{$flavor} } }
          $desc->meta->types);
 
     confess "no templates for ". $desc->name unless @templates;
-    
+
+    # render the templates in reverse order (for "next")
     my $next = '';
     for my $template (reverse @templates){
         $next = $self->_render_attribute
           ($desc, $instance, $extra_vars, $template, $next);
     }
-    return $next;
+    return $next; # this is the most specific template
 }
 
 sub _render_attribute {
     my ($self, $desc, $instance, $extra_vars, $template, $next) = @_;
     
-    my $value = $instance->meta->
-      get_meta_instance->get_slot_value($instance, $desc->name);
-    
     return $self->_render_template($template, {
         description => $desc,
         name        => $desc->name,
         attribute   => $desc->attribute,
-        value       => $desc->attribute->get_value($instance),
+        value       => eval { $desc->attribute->get_value($instance) },
         next        => $next,
         %{ $extra_vars || {} }, # TODO: warn when this conflicts
     });
