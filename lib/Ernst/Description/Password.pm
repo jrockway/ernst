@@ -20,7 +20,7 @@ has '+transform_rule' => (
 );
 
 has '+templates' => ( default => sub { +{
-    view => 'Password: [hidden] ([% value %])',
+    view => 'Password: [hidden]',
     edit => 'Password: <input type="password" name="password" />  Confirm: <input type="password" name="password_again" />',
 }});
 
