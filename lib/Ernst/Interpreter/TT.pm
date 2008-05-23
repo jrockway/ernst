@@ -61,7 +61,7 @@ sub render_attribute {
         description => $desc,
         name        => $desc->name,
         attribute   => $desc->attribute,
-        value       => $value,
+        value       => $desc->attribute->get_value($instance),
         default     => 'NOT YET IMPLEMENTED',
     });
 }
