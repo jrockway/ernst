@@ -1,6 +1,7 @@
 package TestApp::Backend::Record;
 use Ernst;
 use Data::UUID;
+use Text::Markdown;
 
 with 'MooseX::Storage::Directory::Id';
 
@@ -63,8 +64,16 @@ has 'biography' => (
         min_length     => 0,
         average_length => '3000',
         traits         => [qw/TT Editable Friendly/],
+        friendly       => 'Bio',
         templates      => {
-            edit => 'Biography: <textarea name="biography">[% value | html %]</textarea>',
+            edit => 'Bio: <textarea name="biography">[% value | html %]</textarea>',
+            view => sub {
+                my $args = shift;
+                my $md = Text::Markdown->new;
+                "[% label %]: <div class='markdown'>".
+                  $md->markdown($args->{value}).
+                    "</div>";
+            },
         },
     },
 );
