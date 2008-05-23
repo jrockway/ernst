@@ -131,7 +131,7 @@ sub interpret {
         description     => $desc,
         class           => $desc->class,
         name            => $desc->name,
-        instance        => ref $instance ? $instance : {},
+        instance        => $instance,
         %{ $extra_vars || {} }, # TODO: warn when this conflicts
     });
 }
