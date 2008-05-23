@@ -36,9 +36,7 @@ has 'default_attribute_templates' => (
         return +{
             "" => {
                 view => flatten q{
-                    <div id="[% name | html %]_view">
-                      [% label | html %]: [% value | html %]
-                    </div>
+                    [% label | html %]: [% value | html %]
                 },
                 edit => flatten q{
                     <label for="[% name | html %]"
