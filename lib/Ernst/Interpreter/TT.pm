@@ -140,7 +140,7 @@ sub _render_template {
     my $output;
 
     $template = $template->($stash) if ref $template && ref $template eq 'CODE';
-    
+
     $self->engine->process(\$template, $stash, \$output);
     return $output;
 }
@@ -194,7 +194,7 @@ sub render_attribute {
 sub _render_attribute {
     my ($self, $desc, $instance, $extra_vars, $template, $next) = @_;
 
-    my $stash = {
+    return $self->_render_template($template, {
         description => $desc,
         name        => $desc->name,
         label       => (eval { $desc->label } || ucfirst $desc->name ),
@@ -202,10 +202,7 @@ sub _render_attribute {
         value       => (eval { $desc->attribute->get_value($instance) } || ''),
         next        => $next,
         %{ $extra_vars || {} }, # TODO: warn when this conflicts
-    };
-
-    return $self->_render_template($template, $stash);
-
+    });
 }
 
 1;
