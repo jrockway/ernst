@@ -1,3 +1,23 @@
-ideas for Interpreter::TT
- * class defines flavours
-   Interpreter::TT->new( description => 
+new templating language
+* specify fragments (abbreviated syntax?)
+(* flavored of course)
+* inner/augment
+* next
+* apply attributes with xpath
+
+Example:
+
+ template hierarchy:
+   ""            [% value %]
+   String        <span>[- inner([- next -]) -]</span>
+   <instance>    <b>[- augment -]</b>
+
+ attributes:
+   '/span' => { class => [qw/foo bar/], id => [qw/[% name %]/] }
+
+Result:
+
+  <span class="foo bar" id="[% name %]"><b>[% value %]</b></span>
+
+* automatic attribute namespacing
+
