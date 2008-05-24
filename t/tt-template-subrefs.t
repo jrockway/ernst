@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 2;
+use Test::More tests => 3;
 
 use Ernst::Interpreter::TT;
 
@@ -11,7 +11,10 @@ my $i = 0;
 
   __PACKAGE__->meta->metadescription->apply_role(
       'Ernst::Description::Trait::TT::Class', {
-      flavors => [qw/view/],
+      flavors   => [qw/view foo/],
+      templates => {
+          foo => sub { "$i" },
+      },
   });
   
   has 'foo' => (
@@ -28,7 +31,8 @@ my $i = 0;
                       return '0: [% value %]';
                   }
                   return '1: [% value %]';
-              }
+              },
+              foo => '',
           },
       },
   );
@@ -43,3 +47,7 @@ is $view_0, '<div id="view_class_Class">0: changed<br /></div>';
 $i = 1;
 my $view_1 = $tt->interpret($class, 'view');
 is $view_1, '<div id="view_class_Class">1: changed<br /></div>';
+
+$i = 2;
+my $foo = $tt->interpret($class, 'foo');
+is $foo, '2';
