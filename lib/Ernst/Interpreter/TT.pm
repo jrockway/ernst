@@ -136,9 +136,12 @@ sub interpret {
 }
 
 sub _render_template {
-    my ($self, $template, $vars) = @_;
+    my ($self, $template, $stash) = @_;
     my $output;
-    $self->engine->process(\$template, $vars, \$output);
+
+    $template = $template->($stash) if ref $template && ref $template eq 'CODE';
+    
+    $self->engine->process(\$template, $stash, \$output);
     return $output;
 }
 
@@ -200,8 +203,6 @@ sub _render_attribute {
         next        => $next,
         %{ $extra_vars || {} }, # TODO: warn when this conflicts
     };
-
-    $template = $template->($stash) if ref $template && ref $template eq 'CODE';
 
     return $self->_render_template($template, $stash);
 
