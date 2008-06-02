@@ -10,10 +10,10 @@ my $i = 0;
   use Ernst;
 
   __PACKAGE__->meta->metadescription->apply_role(
-      'Ernst::Description::Trait::TT::Class', {
-      flavors   => [qw/view foo/],
+      'Ernst::Description::Trait::TT', {
       templates => {
-          foo => sub { "$i" },
+          view => '[% FOREACH a IN attributes.keys %][% attributes.$a %][% END %]',
+          foo  => sub { "$i" },
       },
   });
   
@@ -42,11 +42,11 @@ my $tt = Ernst::Interpreter::TT->new;
 my $class = Class->new( foo => 'hello' );
 
 my $view_0 = $tt->interpret($class, 'view');
-is $view_0, '<div id="view_class_Class">0: changed<br /></div>';
+is $view_0, '0: changed';
 
 $i = 1;
 my $view_1 = $tt->interpret($class, 'view');
-is $view_1, '<div id="view_class_Class">1: changed<br /></div>';
+is $view_1, '1: changed';
 
 $i = 2;
 my $foo = $tt->interpret($class, 'foo');
