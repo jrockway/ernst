@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 8;
+use Test::More tests => 9;
 
 use ok 'Ernst::Interpreter::TT::HTMLForm';
 
@@ -37,7 +37,9 @@ use ok 'Ernst::Interpreter::TT::HTMLForm';
           type               => 'String',
           traits             => [qw/TT Editable Friendly/],
           label              => 'Desired username',
-          instructions       => 'The username can contain any characters.',
+          initially_editable => 1,
+          editable           => 0,
+          instructions       => 'The username can contain any characters.  Choose wisely; you may not change it after registration.',
           templates          => {
               view => '<b>[% value | html %]</b>',
               # use default edit and test
@@ -82,6 +84,10 @@ $i->add_default_attribute_template(
 my $test = $i->interpret($form, 'test');
 is $test, 'Form<OH HAI>jrockway', 'render as test worked';
 
+my $initial_edit = $i->interpret('Form', 'edit', { action => 'ACTION' });
+is $initial_edit, '<form id="edit_class_Form" method="post" action="ACTION"><ul><li><span id="view_id">ID: </span></li><li><label for="username" id="username_label">Desired username<span class="required">*</span></label><input type="text" class="field text medium" name="username" id="username" value="" /><p class="instruct">The username can contain any characters.  Choose wisely; you may not change it after registration.</p></li><li><div class="rich_text"><label for="biography" id="biography_label">Biography</label><input type="text" class="field text medium" name="biography" id="biography" value="" /></div></li><li><input type="submit" name="do_submit" value="Submit" /></li></ul> </form>', 
+  'initial edit worked';
+
 my $edit = $i->interpret($form, 'edit', { action => 'ACTION' });
-is $edit, '<form id="edit_class_Form" method="post" action="ACTION"><ul><li><span id="view_id">ID: 42</span></li><li><label for="username" id="username_label">Desired username<span class="required">*</span></label><input type="text" class="field text medium" name="username" id="username" value="jrockway" /><p class="instruct">The username can contain any characters.</p></li><li><div class="rich_text"><label for="biography" id="biography_label">Biography</label><input type="text" class="field text medium" name="biography" id="biography" value="&lt;OH HAI&gt;" /></div></li><li><input type="submit" name="do_submit" value="Submit" /></li></ul> </form>',
+is $edit, '<form id="edit_class_Form" method="post" action="ACTION"><ul><li><span id="view_id">ID: 42</span></li><li><b>jrockway</b></li><li><div class="rich_text"><label for="biography" id="biography_label">Biography</label><input type="text" class="field text medium" name="biography" id="biography" value="&lt;OH HAI&gt;" /></div></li><li><input type="submit" name="do_submit" value="Submit" /></li></ul> </form>',
   'render as edit worked';
