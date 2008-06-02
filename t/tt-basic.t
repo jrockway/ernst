@@ -9,7 +9,6 @@ use ok 'Ernst::Interpreter::TT';
 
   __PACKAGE__->meta->metadescription->apply_role(
       'Ernst::Description::Trait::TT', {
-          flavors   => [qw/test/],
           templates => {
               test => '[% class.name %] [% biography %] [% username %]',
           },
