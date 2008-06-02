@@ -6,9 +6,7 @@ use Text::Markdown;
 with 'MooseX::Storage::Directory::Id';
 
 __PACKAGE__->meta->metadescription->apply_role(
-    'Ernst::Description::Trait::TT::Class', {
-        flavors   => [qw/view edit/],
-    },
+    'Ernst::Description::Trait::TT',
 );
 
 has 'uuid' => (
@@ -36,12 +34,11 @@ has 'username' => (
     description => {
         type               => 'String',
         min_length         => 0,
-        max_length         => 8,
+        max_length         => 16,
         traits             => [qw/TT Editable Friendly/],
         initially_editable => 1,
         editable           => 0,
-        templates          => {
-        },
+        instructions       => 'You may not change this after registration, so choose wisely.',
     },
 );
 
