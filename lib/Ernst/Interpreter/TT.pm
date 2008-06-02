@@ -42,7 +42,7 @@ sub interpret {
             $extra_vars,
         );
     }
-    
+
     my $template = $self->lookup_class_template($desc, $flavor);
 
     return $self->_render_template($template, {
@@ -60,6 +60,11 @@ sub interpret {
 sub render_attribute {
     my ($self, $desc, $instance, $flavor, $extra_vars) = @_;
 
+    if($desc->meta->type_isa('Container')){
+        my $value = $desc->attribute->get_value($instance);
+        $extra_vars->{original} = $self->interpret($value, $flavor, $extra_vars);
+    }
+    
     my $template = $self->lookup_attribute_template($desc, $flavor);
     return $self->_render_attribute
       ($desc, $instance, $extra_vars, $template);
