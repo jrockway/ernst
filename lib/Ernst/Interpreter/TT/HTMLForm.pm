@@ -93,7 +93,7 @@ sub _assemble_edit_html {
     if($desc->does('Ernst::Description::Trait::Friendly')){
         if(defined (my $instructions = $desc->instructions)){
             $html .= flatten q{
-                <p class="instruct">foo[% description.instructions | html %]</p>
+                <p class="instruct">[% description.instructions | html %]</p>
             };
         }
     }

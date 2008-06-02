@@ -34,9 +34,11 @@ use ok 'Ernst::Interpreter::TT::HTMLForm';
       isa         => 'Str',
       required    => 1,
       description => {
-          type       => 'String',
-          traits     => [qw/TT Editable/],
-          templates  => {
+          type               => 'String',
+          traits             => [qw/TT Editable Friendly/],
+          label              => 'Desired username',
+          instructions       => 'The username can contain any characters.',
+          templates          => {
               view => '<b>[% value | html %]</b>',
               # use default edit and test
           },
@@ -81,5 +83,5 @@ my $test = $i->interpret($form, 'test');
 is $test, 'Form<OH HAI>jrockway', 'render as test worked';
 
 my $edit = $i->interpret($form, 'edit', { action => 'ACTION' });
-is $edit, '<form id="edit_class_Form" method="post" action="ACTION"><ul><li><span id="view_id">ID: 42</span></li><li><label for="username" id="username_label">Username<span class="required">*</span></label><input type="text" class="field text medium" name="username" id="username" value="jrockway" /></li><li><div class="rich_text"><label for="biography" id="biography_label">Biography</label><input type="text" class="field text medium" name="biography" id="biography" value="&lt;OH HAI&gt;" /></div></li><li><input type="submit" name="do_submit" value="Submit" /></li></ul> </form>', 
-'render as edit worked';
+is $edit, '<form id="edit_class_Form" method="post" action="ACTION"><ul><li><span id="view_id">ID: 42</span></li><li><label for="username" id="username_label">Desired username<span class="required">*</span></label><input type="text" class="field text medium" name="username" id="username" value="jrockway" /><p class="instruct">The username can contain any characters.</p></li><li><div class="rich_text"><label for="biography" id="biography_label">Biography</label><input type="text" class="field text medium" name="biography" id="biography" value="&lt;OH HAI&gt;" /></div></li><li><input type="submit" name="do_submit" value="Submit" /></li></ul> </form>',
+  'render as edit worked';

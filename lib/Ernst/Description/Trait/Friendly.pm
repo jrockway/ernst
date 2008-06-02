@@ -10,4 +10,10 @@ has 'label' => (
     },
 );
 
+has 'instructions' => (
+    is      => 'ro',
+    isa     => 'Str | Undef',
+    default => sub { undef },
+);
+
 1;
