@@ -1,5 +1,5 @@
 package Ernst::Description::Collection;
-use Ernst;
+use Ernst::Description::Base;
 use Ernst::TypeLibrary;
 use Sub::AliasedUnderscore qw(transformed);
 
@@ -7,14 +7,9 @@ extends 'Ernst::Description';
 with    'Ernst::Description::Collection::Base';
 
 has 'cardinality' => (
-    isa         => 'ContainerCardinality',
-    is          => 'ro',
-    required    => 1,
-    traits      => ['MetaDescription'],
-    description => {
-        type    => 'OptionList',
-        options => [qw/+ ? * 1/],
-    },
+    isa      => 'ContainerCardinality',
+    is       => 'ro',
+    required => 1,
 );
 
 sub is_required_cardinality {

@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Ernst::Description;
-use Test::More tests => 2;
+use Test::More tests => 1;
 
 { package Superclass;
   use Ernst;
@@ -26,8 +26,4 @@ use Test::More tests => 2;
 
 my @attributes = Class->meta->metadescription->get_attribute_list;
 is_deeply \@attributes, [qw/foo/];
-
-my $description = Ernst::Description->new( name => 'test' );
-@attributes = $description->meta->metadescription->get_attribute_list;
-is_deeply \@attributes, [qw/name is_mutable/];
 

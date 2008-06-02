@@ -1,5 +1,5 @@
 package Ernst::Description::Integer;
-use Ernst;
+use Ernst::Description::Base;
 
 extends 'Ernst::Description::Value';
 

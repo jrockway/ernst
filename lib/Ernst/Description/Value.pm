@@ -1,4 +1,4 @@
 package Ernst::Description::Value;
-use Ernst;
+use Ernst::Description::Base;
 extends 'Ernst::Description';
 1;

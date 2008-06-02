@@ -1,5 +1,5 @@
 package Ernst::Description::Password;
-use Ernst;
+use Ernst::Description::Base;
 
 extends 'Ernst::Description::Value';
 with qw/Ernst::Description::Trait::Editable 

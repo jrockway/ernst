@@ -1,5 +1,5 @@
 package Ernst::Interpreter::Callback;
-use Ernst;
+use Moose;
 use MooseX::AttributeHelpers;
 use List::MoreUtils qw(uniq);
 use Sub::Name;

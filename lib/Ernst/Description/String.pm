@@ -1,18 +1,14 @@
 package Ernst::Description::String;
-use Ernst;
+use Ernst::Description::Base;
 
 extends 'Ernst::Description::Value';
 
 # min/max length
 
 has "${_}_length" => (
-    is          => 'ro',
-    isa         => 'Int',
-    predicate   => "has_${_}_length",
-    traits      => ['MetaDescription'],
-    description => {
-        type =>  'Integer',
-    },
+    is        => 'ro',
+    isa       => 'Int',
+    predicate => "has_${_}_length",
 ) for qw/min max expected/;
 
 # expected_length is for guessing the size of text fields if there is

@@ -19,14 +19,10 @@ coerce InsideType
   };
 
 has 'inside_type' => (
-    isa         => 'InsideType',
-    is          => 'ro',
-    required    => 1,
-    traits      => ['MetaDescription'],
-    coerce      => 1,
-    description => {
-        type => 'String',
-    },
+    isa      => 'InsideType',
+    is       => 'ro',
+    required => 1,
+    coerce   => 1,
 );
 
 1;

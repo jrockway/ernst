@@ -98,7 +98,7 @@ has 'metadescription' => (
             ),
             %$desc
         );
-        
+
         # if an instance was passed, clone it and rebless it into our
         # new subclass
         if(ref $base){

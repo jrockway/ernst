@@ -1,5 +1,5 @@
 package Ernst::Description;
-use Ernst;
+use Ernst::Description::Base;
 
 extends 'MooseX::MetaDescription::Description';
 
@@ -10,23 +10,15 @@ extends 'MooseX::MetaDescription::Description';
 has '+descriptor' => (required => 0);
 
 has 'name' => (
-    is          => 'ro',
-    isa         => 'Str',
-    required    => 1,
-    traits      => ['MetaDescription'],
-    description => {
-        type => 'String',
-    },
+    is       => 'ro',
+    isa      => 'Str',
+    required => 1,
 );
 
 has 'is_mutable' => (
-    is          => 'ro',
-    isa         => 'Bool',
-    traits      => ['MetaDescription'],
-    description => {
-        type => 'Boolean',
-    },
-    default  => sub { 0 },
+    is      => 'ro',
+    isa     => 'Bool',
+    default => sub { 0 },
 );
 
 # NOTE:

@@ -1,5 +1,5 @@
 package Ernst::Description::Container;
-use Ernst;
+use Ernst::Description::Base;
 use MooseX::AttributeHelpers;
 use Data::Thunk 'lazy';
 
@@ -8,14 +8,9 @@ extends 'Ernst::Description';
 # this is for the case where a container becomes an attribute of
 # something else, otherwise it will be the same as self->name
 has 'container_name' => (
-    is          => 'ro',
-    isa         => 'Str',
-    default     => sub { shift->name },
-# commented because this is private-ish
-#    traits      => ['MetaDescription'],
-#    description => {
-#        type => 'String',
-#    },
+    is      => 'ro',
+    isa     => 'Str',
+    default => sub { shift->name },
 );
 
 has 'attribute_order' => (
@@ -31,17 +26,12 @@ has 'attribute_order' => (
 );
 
 has 'attributes' => (
-    reader        => 'get_attribute_map',
-    metaclass     => 'Collection::Hash',
-    isa           => 'HashRef[Ernst::Description]',
-    is            => 'ro',
-    provides      => {
-        get  => 'get_attribute',
-    },
-    traits        => ['MetaDescription'],
-    description   => {
-        type        => 'Collection::Map',
-        inside_type => '',
+    reader    => 'get_attribute_map',
+    metaclass => 'Collection::Hash',
+    isa       => 'HashRef[Ernst::Description]',
+    is        => 'ro',
+    provides  => {
+        get => 'get_attribute',
     },
 );
 
