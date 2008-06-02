@@ -62,7 +62,9 @@ sub render_attribute {
 
     if($desc->meta->type_isa('Container')){
         my $value = $desc->attribute->get_value($instance);
-        $extra_vars->{original} = $self->interpret($value, $flavor, $extra_vars);
+        if($value->meta->metadescription->does('Ernst::Description::Trait::TT')){
+            $extra_vars->{original} = $self->interpret($value, $flavor, $extra_vars);
+        }
     }
     
     my $template = $self->lookup_attribute_template($desc, $flavor);
