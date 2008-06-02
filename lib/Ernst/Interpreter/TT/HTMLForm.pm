@@ -51,6 +51,7 @@ has 'default_class_templates' => (
             },
             edit => flatten q{
                 <form id="edit_class_[% name | html %]" method="post"
+                      . .class="ernst_htmlform"
                       . .action="[% action | html %]">
                 <ul>
                     [% FOREACH attr IN attribute_order %]
@@ -85,7 +86,7 @@ sub _assemble_edit_html {
 
     $html .= flatten q{
         <input type="text"
-            . .class="field text medium"
+            . .class="ernst_field ernst_[% description.meta.type %]"
             . .name="[% name | html %]"
             . .id="[% name | html %]"
             . .value="[% value | html %]" />
