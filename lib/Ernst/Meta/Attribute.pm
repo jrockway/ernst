@@ -99,6 +99,8 @@ has 'metadescription' => (
             %$desc
         );
 
+        $class->make_immutable;
+        
         # if an instance was passed, clone it and rebless it into our
         # new subclass
         if(ref $base){

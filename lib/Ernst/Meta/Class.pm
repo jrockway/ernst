@@ -36,6 +36,8 @@ before 'add_attribute' => sub {
     $self->_remember_attribute($name);
 };
 
+no Moose; # STOP EATING MY MUFFINS
+
 1;
 __END__
 

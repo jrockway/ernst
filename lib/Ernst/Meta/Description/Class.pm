@@ -41,6 +41,8 @@ sub types {
           grep { $_->isa($TOP_PACKAGE) } $self->linearized_isa;
 }
 
+no Moose; # bye now
+
 1;
 
 __END__
