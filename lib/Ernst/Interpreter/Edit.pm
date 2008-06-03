@@ -15,67 +15,107 @@ sub _grep {
 
 sub interpret {
     my ($self, $old_instance, $new_attributes) = @_;
-
+    
+    ## change "undef" to the class name (so we can $old_instance->meta)
     $old_instance ||= $self->description->class->name;
 
+    ## find which attributes are editable
     my @attributes = $self->_grep(
         sub { $_[1]->does('Ernst::Description::Trait::Editable') },
         $self->description->get_attribute_list,
     );
     
+    ## grep out things that can't be edited
+    ## if $old_instance is a class, then we look at initially_editable
+    ## otherwise we look at editable
     my $test = blessed $old_instance ? 'editable' : 'initially_editable';
     @attributes = $self->_grep(
         sub { $_[1]->$test },
         @attributes,
     );
     
+    ## now we find attributes that have transform rules
     my @transformable = $self->_grep(
         sub { $_[1]->does('Ernst::Description::Trait::Transform') },
         @attributes,
     );
     
+    ## then we run the transformations, keeping track of errors
+    my %errors;
     my %direct_attributes = %{ $new_attributes->hslice(\@attributes) || {} };
     foreach my $name (@transformable){
         my $desc   = $self->description->get_attribute($name);
         my @source = @{ $desc->transform_source };
         my $rule   = $desc->transform_rule;
 
-        $direct_attributes{$name} = $rule->(
-            map { $new_attributes->{$_} } @source
-        );
+        eval {
+            $direct_attributes{$name} = $rule->(
+                map { $new_attributes->{$_} } @source
+            );
+        };
+        if(my $error = $@){
+            $errors{$name} = $self->_parse_error($error);
+        }
     }
 
+    ## delete ignorable attributes
     foreach my $name (keys %direct_attributes){
         my $desc = $self->description->get_attribute($name);
         delete $direct_attributes{$name}
           if $desc->ignore_if->($direct_attributes{$name});
     }
 
+    ## treat the empty string as undef (so '' isn't a valid Str)
     foreach my $key (keys %direct_attributes){
         no warnings;
         $direct_attributes{$key} = undef if $direct_attributes{$key} eq '';
     }
-    
-    my $result = eval {
 
+    ## now we run the Moose validations on each attribute
+    eval {
         $self->validate($old_instance, \%direct_attributes);
-
-        if(!blessed $old_instance){
-            my $metaclass = $self->description->class;
-            return $metaclass->name->new( %direct_attributes );
-        }
-        
-        my $instance = $old_instance->meta->clone_instance($old_instance);
-        foreach my $name (keys %direct_attributes){
-            my $value = $direct_attributes{$name};
-            $instance->meta->get_attribute($name)->set_value($instance, $value);
-        }
-        return $instance;
     };
-    if($@){
-        die { errors => $@ };
+
+    ## now we take those errors and combine them with the transform errors
+    ## (hash of array of errors: { column => [ error, ... ], column 2 => ... }
+    my $errors = $@ || {};
+    
+    foreach my $key (keys %errors){
+        my $other = $errors->{$key};
+        if($other){
+            $errors->{$key} = [ $errors{$key}, $other ];
+        }
+        else {
+            $errors->{$key} = [ $errors{$key} ];
+        }
     }
-    return $result;
+    foreach my $key (grep { !ref $errors->{$_} } keys %$errors){
+        $errors->{$key} = [ $errors->{$key} ];
+    }
+
+    die { errors => $errors } if keys %$errors > 0;
+
+    ## ok, we have valid data! create an instance
+
+    if(!blessed $old_instance){
+        # create a new instance
+        my $metaclass = $self->description->class;
+        return $metaclass->name->new( %direct_attributes );
+    }
+        
+    # or update the old one
+    my $instance = $old_instance->meta->clone_instance($old_instance);
+    foreach my $name (keys %direct_attributes){
+        my $value = $direct_attributes{$name};
+        $instance->meta->get_attribute($name)->set_value($instance, $value);
+    }
+    return $instance;
+}
+
+sub _parse_error {
+    my ($self, $error) = @_;
+    my ($msg) = ($error =~ /^(.+) at (?:\S+) line/);
+    return $msg || $error;
 }
 
 sub validate {
@@ -93,8 +133,7 @@ sub validate {
             );
         };
         if(my $error = $@){
-            my ($msg) = ($error =~ /^(.+) at (?:\S+) line/);
-            $errors{$attr->name} = $msg || $error;
+            $errors{$attr->name} = $self->_parse_error($error);
         }
     }
     die \%errors if keys %errors > 0;

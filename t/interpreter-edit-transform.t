@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 5;
+use Test::More tests => 7;
 
 use Ernst::Interpreter::Edit;
 use Test::Exception;
@@ -16,7 +16,7 @@ use Test::Exception;
       description => {
           traits           => [qw/Editable Transform/],
           editable         => 1,
-          ignore_if        => sub { length $_[0] == 0 },
+          ignore_if        => sub { !$_[0] || length $_[0] == 0 },
           transform_source => [qw/password_once password_again/],
           transform_rule   => sub {
               my ($a, $b) = @_;
@@ -31,16 +31,18 @@ my $edit = Ernst::Interpreter::Edit->new( description => Class->meta->metadescri
 my $c = $edit->interpret(undef, { password_once => 'foo', password_again => 'foo' });
 is $c->password, 'foo';
 
-throws_ok {
+dies_ok {
     $edit->interpret(undef, { password_once => 'foo', password_again => 'bar' });
-} qr/passwords do not match/;
+};
+like $@->{errors}{password}[0], qr/passwords do not match/;
 
 $c = $edit->interpret($c, { password_once => 'bar', password_again => 'bar' });
 is $c->password, 'bar';
 
-throws_ok {
+dies_ok {
     $edit->interpret($c, { password_once => 'foo', password_again => 'bar' });
-} qr/passwords do not match/;
+};
+like $@->{errors}{password}[0], qr/passwords do not match/;
 
 # dont change password when fields are both empty
 

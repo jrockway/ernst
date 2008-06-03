@@ -63,13 +63,6 @@ has 'default_class_templates' => (
                                 [% errors.CLASS | html %]
                             </p>
                         [% END %]
-                        <ul id="ernst_[% class %]_error_list">
-                            [% FOREACH error IN errors.keys %]
-                                <li class="ernst_errors">
-                                    [% error %]: [% errors.$error | html %]
-                                </li>
-                            [% END %]
-                        </ul>
                     [% END %]
 
                     [% FOREACH attr IN attribute_order %]
@@ -97,10 +90,20 @@ sub _assemble_edit_html {
             . .id="[% name | html %]_label">[% label | html %]
     };
 
+    # required?
     if($desc->attribute->is_required){
         $html .= '<span class="required">*</span>'; # probably do the * in CSS also
     }
     $html .= "</label>";
+
+    # error?
+    if($args->{errors}{$desc->name}){
+        $html .= flatten q{
+               [% FOREACH error IN errors.$name %]
+                   <p class="ernst_error">[% error | html %]</p>
+               [% END %]
+        };
+    }
 
     $html .= flatten q{
         <input type="text"
@@ -116,6 +119,7 @@ sub _assemble_edit_html {
             };
         }
     }
+
     return $html;
 }
 

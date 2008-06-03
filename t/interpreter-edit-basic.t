@@ -68,5 +68,5 @@ dies_ok {
 
 my $error = $@;
 is ref $error, 'HASH', 'got an error hashref';
-ok $error->{errors}{name}, 'got an error message for "name"';
-ok $error->{errors}{description}, 'got an error message for "description"';
+ok $error->{errors}{name}[0], 'got an error message for "name"';
+ok $error->{errors}{description}[0], 'got an error message for "description"';
