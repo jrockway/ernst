@@ -25,7 +25,7 @@ sub lookup_class_template {
 sub interpret {
     my ($self, $instance, $flavor, $extra_vars) = @_;
     my $desc = $instance->meta->metadescription;
-
+    
     confess "$instance cannot be rendered with the TT interpreter"
       unless $desc->does('Ernst::Description::Trait::TT');
 
@@ -80,7 +80,8 @@ sub _render_attribute {
         name        => $desc->name,
         label       => (eval { $desc->label } || ucfirst $desc->name ),
         attribute   => $desc->attribute,
-        value       => (eval { $desc->attribute->get_value($instance) } || ''),
+        value       => ($extra_vars->{values}{$desc->name} || 
+                          eval { $desc->attribute->get_value($instance) } || ''),
         %{ $extra_vars || {} }, # TODO: warn when this conflicts
     });
 }

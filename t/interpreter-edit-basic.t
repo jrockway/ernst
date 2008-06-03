@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 11;
+use Test::More tests => 14;
 
 use Test::Exception;
 
@@ -65,3 +65,8 @@ is $instance->description, 'desc', 'made a copy';
 dies_ok {
     $editor->interpret(undef, {});
 } 'required fields are required';
+
+my $error = $@;
+is ref $error, 'HASH', 'got an error hashref';
+ok $error->{errors}{name}, 'got an error message for "name"';
+ok $error->{errors}{description}, 'got an error message for "description"';

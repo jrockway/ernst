@@ -54,6 +54,24 @@ has 'default_class_templates' => (
                       . .class="ernst_htmlform"
                       . .action="[% action | html %]">
                 <ul>
+                    [% IF errors %]
+                        <p id="ernst_errors" class="ernst_error">
+                            Please correct the following errors and resubmit.
+                        </p>
+                        [% IF errors.CLASS %]
+                            <p id="ernst_[% class %]_error" class="ernst_error">
+                                [% errors.CLASS | html %]
+                            </p>
+                        [% END %]
+                        <ul id="ernst_[% class %]_error_list">
+                            [% FOREACH error IN errors.keys %]
+                                <li class="ernst_errors">
+                                    [% error %]: [% errors.$error | html %]
+                                </li>
+                            [% END %]
+                        </ul>
+                    [% END %]
+
                     [% FOREACH attr IN attribute_order %]
                         <li>[% attributes.$attr %]</li>
                     [% END %]

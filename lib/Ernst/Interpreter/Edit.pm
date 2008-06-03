@@ -16,6 +16,8 @@ sub _grep {
 sub interpret {
     my ($self, $old_instance, $new_attributes) = @_;
 
+    $old_instance ||= $self->description->class->name;
+
     my @attributes = $self->_grep(
         sub { $_[1]->does('Ernst::Description::Trait::Editable') },
         $self->description->get_attribute_list,
@@ -48,18 +50,56 @@ sub interpret {
         delete $direct_attributes{$name}
           if $desc->ignore_if->($direct_attributes{$name});
     }
-    
-    if(!blessed $old_instance){
-        my $metaclass = $self->description->class;
-        return $metaclass->name->new( %direct_attributes );
-    }
 
-    my $instance = $old_instance->meta->clone_instance($old_instance);
-    foreach my $name (keys %direct_attributes){
-        my $value = $direct_attributes{$name};
-        $instance->meta->get_attribute($name)->set_value($instance, $value);
+    foreach my $key (keys %direct_attributes){
+        no warnings;
+        $direct_attributes{$key} = undef if $direct_attributes{$key} eq '';
     }
-    return $instance;
+    
+    my $result = eval {
+
+        $self->validate($old_instance, \%direct_attributes);
+
+        if(!blessed $old_instance){
+            my $metaclass = $self->description->class;
+            return $metaclass->name->new( %direct_attributes );
+        }
+        
+        my $instance = $old_instance->meta->clone_instance($old_instance);
+        foreach my $name (keys %direct_attributes){
+            my $value = $direct_attributes{$name};
+            $instance->meta->get_attribute($name)->set_value($instance, $value);
+        }
+        return $instance;
+    };
+    if($@){
+        die { errors => $@ };
+    }
+    return $result;
+}
+
+sub validate {
+    my ($self, $old_instance, $direct_attributes) = @_;
+    my %errors;
+    my $meta_instance = $old_instance->meta->get_meta_instance();
+    my $trial_instance = $meta_instance->create_instance();
+    foreach my $attr_name (keys %$direct_attributes) {
+        my $attr = $self->description->class->get_attribute($attr_name);
+        eval {
+            $attr->initialize_instance_slot(
+                $meta_instance,
+                $trial_instance,
+                $direct_attributes
+            );
+        };
+        if(my $error = $@){
+            my ($msg) = ($error =~ /^(.+) at (?:\S+) line/);
+            $errors{$attr->name} = $msg || $error;
+        }
+    }
+    die \%errors if keys %errors > 0;
+    
+    return; # no errors
 }
 
 1;
