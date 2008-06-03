@@ -15,7 +15,7 @@ around process => sub {
 
         my $i = Ernst::Interpreter::TT::HTMLForm->new;
         for my $key (@ernst){
-            $c->stash->{$key. '_rendered'} = $i->interpret($c->stash->{$key}, $flavor);
+            $c->stash->{$key. '_rendered'} = $i->interpret($c->stash->{$key}, $flavor, $c->stash->{extra_ernst_args});
         }
     }
 

@@ -24,14 +24,27 @@ sub view :Local Args(1) {
 
 sub process_submit {
     my ($self, $c, $obj) = @_;
-
-    my $edit = Ernst::Interpreter::Edit->new(
-        description => TestApp::Backend::Record->meta->metadescription,
-    );
-
-    my $record = $edit->interpret($obj, $c->req->params);
-    $c->model('Records')->store($record);
-    $c->res->redirect($c->uri_for('/records/view', $record->get_id));
+    
+    eval {
+        my $edit = Ernst::Interpreter::Edit->new(
+            description => TestApp::Backend::Record->meta->metadescription,
+        );
+        my $record = $edit->interpret($obj, $c->req->params);
+        $c->model('Records')->store($record);
+        $c->res->redirect($c->uri_for('/records/view', $record->get_id));
+    };
+    
+    if(my $errors = $@){
+        $c->stash->{flavor} = 'edit';
+        $c->stash->{template} = 'edit.tt';
+        $c->stash->{object} = $obj;
+        $c->stash->{extra_ernst_args}{errors} =
+          eval { $errors->{errors} } || 
+            { CLASS => "Internal error: $errors" };
+        $c->stash->{extra_ernst_args}{values} = $c->req->params;
+        $c->stash->{template} = 'edit.tt';
+        $c->detach;
+    }
 }
 
 sub edit :Local Args(1) {
@@ -56,8 +69,16 @@ sub create :Local Args(0) {
         $c->stash->{object} = 'TestApp::Backend::Record';
     }
     else {
-        $self->process_submit($c, undef);
+        $self->process_submit($c, 'TestApp::Backend::Record');
     }
+}
+
+sub search :Local Args(2){
+    my ($self, $c, $key, $value) = @_;
+    my @records = $c->model('Records')->search({ $key => $value });
+    warn scalar @records;
+    $c->stash->{ids}      = [map { $_->get_id } @records];
+    $c->stash->{template} = 'show_all.tt';
 }
 
 1;
