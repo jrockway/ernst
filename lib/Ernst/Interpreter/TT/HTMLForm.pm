@@ -178,7 +178,7 @@ override render_attribute => sub {
     # lookup applicable templates (for "next")
     my @templates =
       grep { defined }
-        ($desc->templates->{$flavor},
+        ($self->lookup_attribute_template($desc, $flavor),
          map { $self->default_attribute_templates->{$_}{$flavor} }
            $desc->meta->types);
 
