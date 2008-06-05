@@ -11,8 +11,18 @@ has "${_}_length" => (
     predicate => "has_${_}_length",
 ) for qw/min max expected/;
 
-# expected_length is for guessing the size of text fields if there is
-# no max length, but the expected length is 10, then we'll use a
-# smaller text field
+# form field size
 
+has 'rows' => (
+    is      => 'ro',
+    isa     => 'Int',
+    deafult => sub { 1 },
+);
+
+has 'cols' => (
+    is      => 'ro',
+    isa     => 'Int',
+    deafult => sub { 50 },
+);
+    
 1;
