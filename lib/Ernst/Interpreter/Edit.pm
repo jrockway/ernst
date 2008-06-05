@@ -58,17 +58,24 @@ sub interpret {
         }
     }
 
-    ## delete ignorable attributes
-    foreach my $name (keys %direct_attributes){
-        my $desc = $self->description->get_attribute($name);
-        delete $direct_attributes{$name}
-          if $desc->ignore_if->($direct_attributes{$name});
-    }
-
     ## treat the empty string as undef (so '' isn't a valid Str)
     foreach my $key (keys %direct_attributes){
         no warnings;
         $direct_attributes{$key} = undef if $direct_attributes{$key} eq '';
+    }
+
+    ## delete ignorable attributes
+    foreach my $name (keys %direct_attributes){
+        my $desc = $self->description->get_attribute($name);
+
+        # delete if ignorable
+        delete $direct_attributes{$name} and next
+          if $desc->ignore_if->($direct_attributes{$name});
+
+        # delete if blank and not required
+        delete $direct_attributes{$name} and next
+          if !defined $direct_attributes{$name} &&
+             !$self->description->class->get_attribute($name)->is_required;
     }
 
     ## now we run the Moose validations on each attribute
@@ -125,7 +132,14 @@ sub validate {
     my $trial_instance = $meta_instance->create_instance();
     foreach my $attr_name (keys %$direct_attributes) {
         my $attr = $self->description->class->get_attribute($attr_name);
+        
         eval {
+            # this is the logic that Moose itself uses for the
+            # "Attribute (foo) is required" message
+            die 'This field is required'
+              if !defined $direct_attributes->{$attr_name} && 
+                $attr->is_required && !$attr->has_default && !$attr->has_builder;
+            
             $attr->initialize_instance_slot(
                 $meta_instance,
                 $trial_instance,
