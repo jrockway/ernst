@@ -2,6 +2,8 @@ package Ernst::Description::OptionList;
 use Ernst::Description::Base;
 use Ernst::Description::String;
 
+with 'Ernst::Description::Trait::Transform';
+
 extends 'Ernst::Description::Value';
 
 has 'options' => (
@@ -31,5 +33,23 @@ sub is_option {
     # not in the list
     return;
 }
+
+has '+transform_source' => (
+    lazy    => 1,
+    default => sub {
+        my $name = shift->name;
+        return [ $name, "${name}_freeform" ];
+    },
+);
+
+has '+transform_rule' => (
+    default => sub { 
+        sub {
+            my ($fixed, $free) = @_;
+            return $free if $free;
+            return $fixed;
+        }
+    }
+);
 
 1;
