@@ -8,9 +8,10 @@ has 'id' => (
 );
 
 has 'classes' => (
-    is      => 'ro',
-    isa     => 'ArrayRef[Str]',
-    default => sub { [] },
+    is         => 'ro',
+    isa        => 'ArrayRef[Str]',
+    default    => sub { [] },
+    auto_deref => 1,
 );
 
 1;
