@@ -3,9 +3,10 @@ use Moose::Role;
 use Moose::Util::TypeConstraints;
 
 has 'transform_source' => (
-    is       => 'ro',
-    isa      => 'ArrayRef[Str]',
-    required => 1,
+    is      => 'ro',
+    isa     => 'ArrayRef[Str]',
+    lazy    => 1,
+    default => sub { [shift->name] },
 );
 
 has 'transform_rule' => (
