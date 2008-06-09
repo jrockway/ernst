@@ -46,8 +46,8 @@ has '+transform_rule' => (
     default => sub { 
         sub {
             my ($fixed, $free) = @_;
-            return $free if $free;
-            return $fixed;
+            return $free if $free && !$fixed;
+            return $fixed if $fixed && !$free;
         }
     }
 );
