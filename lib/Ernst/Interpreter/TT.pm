@@ -66,7 +66,7 @@ sub render_attribute {
             $extra_vars->{original} = $self->interpret($value, $flavor, $extra_vars);
         }
     }
-    
+
     my $template = $self->lookup_attribute_template($desc, $flavor);
     return $self->_render_attribute
       ($desc, $instance, $extra_vars, $template);
@@ -75,13 +75,22 @@ sub render_attribute {
 sub _render_attribute {
     my ($self, $desc, $instance, $extra_vars, $template) = @_;
 
+    my $value = (
+        $extra_vars->{values}{$desc->name} || 
+        eval { $desc->attribute->get_value($instance) } || 
+        ''
+    );
+
+    if($desc->does('Ernst::Description::Trait::PostProcess')){
+        $value = $desc->postprocess->($value);
+    }
+    
     return $self->_render_template($template, {
         description => $desc,
         name        => $desc->name,
         label       => (eval { $desc->label } || ucfirst $desc->name ),
         attribute   => $desc->attribute,
-        value       => ($extra_vars->{values}{$desc->name} || 
-                          eval { $desc->attribute->get_value($instance) } || ''),
+        value       => $value,
         %{ $extra_vars || {} }, # TODO: warn when this conflicts
     });
 }
