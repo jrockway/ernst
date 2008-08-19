@@ -5,8 +5,7 @@ use Test::More tests => 11;
 
 { package Foo;
   use Ernst;
-  use Moose;
-  
+
   has 'an_attribute' => (
       traits      => ['MetaDescription'],
       is          => 'ro',
@@ -15,9 +14,9 @@ use Test::More tests => 11;
           type => 'String',
       },
   );
-  
+
   has 'foo' => ( is => 'ro' );
-  
+
 }
 
 my $foo = Foo->new(an_attribute => 'hello, world');
@@ -52,8 +51,8 @@ is $an_attribute_desc->name, 'an_attribute', 'correct name for an_attribute';
 
 is_ref $foo_desc->class, $foo->meta, 'description class == metaclass';
 
-is_ref 
-  $foo_desc->get_attribute('an_attribute'), 
+is_ref
+  $foo_desc->get_attribute('an_attribute'),
   $foo->meta->get_attribute('an_attribute')->metadescription,
   'container -> attribute == attribute -> metadescription';
 
