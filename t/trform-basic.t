@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 9;
+use Test::More tests => 10;
 use Test::Exception;
 
 use ok 'Ernst::Interpreter::TRForm';
@@ -14,11 +14,11 @@ use ok 'Ernst::Interpreter::TRForm';
               test => q{
                   <form>
                     <div id="attribute">
-                        <span class="label">Label</span>: <input type="text">
+                        <span class="label">Attribute Label</span>: <input type="text">
                     </div>
                     <div id="test">
                       <p class="instructions">Lorem ipsum dolor (sit) amit.</p>
-                      <p class="label">Field:</p>
+                      <span class="label">Field</span>:
                       <input type="text">
                     </div>
                   </form>
@@ -48,6 +48,7 @@ use ok 'Ernst::Interpreter::TRForm';
       is          => 'ro',
       isa         => 'Str',
       traits      => ['MetaDescription'],
+      required    => 1,
       description => {
           traits             => [qw/Region Editable/],
           editable           => 1,
@@ -63,7 +64,8 @@ use ok 'Ernst::Interpreter::TRForm';
 my $md = Class->meta->metadescription;
 ok $md;
 
-my $i = Ernst::Interpreter::TRForm->new(
+my $i = Ernst::Interpreter::TRForm->new_with_traits(
+    traits    => [qw/Namespace Label Instructions/],
     class     => Class->meta,
     flavor    => 'test',
     namespace => '',
@@ -76,17 +78,18 @@ lives_ok {
 } 'interpret lived';
 
 ok( $result = $result->render );
+like $result, qr/<input[^>]+name="attribute"/, 'attribute field name added to input';
+like $result, qr/<input[^>]+name="test"/, 'test field name added to input';
 like $result, qr/Test Field[*]/, 'field label added';
 like $result, qr/Fill in some test data here[.]/, 'field instructions added';
-like $result, qr/<input[^>]+name="test"/, 'field name added to input';
 
 chomp(my $exact = <<HERE);
 <form>
                     <div id="attribute">
-                        <span class="label">attribute</span>: <input type="text" name="attribute"/></div>
+                        <span class="label">Attribute Label*</span>: <input type="text" name="attribute"/></div>
                     <div id="test">
                       <p class="instructions">Fill in some test data here.</p>
-                      <p class="label">Test Field*</p>
+                      <span class="label">Test Field*</span>:
                       <input type="text" name="test"/></div>
                   </form>
 HERE

@@ -2,15 +2,13 @@ package Ernst::Interpreter::TRForm;
 use Moose;
 use Moose::Util::TypeConstraints;
 use Template::Refine::Fragment;
-use Template::Refine::Processor::Rule;
 use Template::Refine::Processor::Rule::Transform::Replace;
+use Template::Refine::Processor::Rule;
 use Template::Refine::Processor::Rule::Select::XPath;
-use UNIVERSAL::require;
 
-with 'Ernst::Interpreter';
+with 'Ernst::Interpreter', 'MooseX::Traits';
 
-use Ernst::Interpreter::TRForm::Namespace;
-
+has '+_trait_namespace' => ( default => 'Ernst::Interpreter::TRForm::Trait' );
 
 has 'class' => (
     is       => 'ro',
@@ -22,14 +20,6 @@ has 'flavor' => (
     is       => 'ro',
     isa      => 'Str',
     required => 1,
-);
-
-has 'namespace' => (
-    is       => 'ro',
-    isa      => 'Ernst::Interpreter::TRForm::Namespace',
-    default  => sub { Ernst::Interpreter::TRForm::Namespace->new( namespace => [] ) },
-    required => 1,
-    coerce   => 1,
 );
 
 sub interpret {
@@ -44,114 +34,65 @@ sub interpret {
     my $template = $desc->representation_for($flavor) ||
       confess "$instance does not contain a representation for the '$flavor' flavor";
 
-    my $frag = Template::Refine::Fragment->new_from_string($template);
+    my $class_fragment = Template::Refine::Fragment->new_from_string($template);
 
     my @attributes = map { $self->class->get_attribute($_) }
       $self->class->metadescription->get_attribute_list;
 
     for my $attribute (@attributes){
-        $frag = $self->_transform_attribute(
-            $frag,
-            $attribute,
-            $instance,
+        my $region_selector = $self->_get_attribute_region($attribute);
+        my $replace = Template::Refine::Processor::Rule::Transform::Replace->new(
+            replacement => sub {
+                my $node = shift;
+                my $region_fragment = Template::Refine::Fragment->new_from_string(
+                    $node->toString,
+                );
+
+                $region_fragment = $self->transform_attribute(
+                    $attribute,
+                    $region_fragment,
+                    $instance,
+                );
+
+                return $region_fragment->fragment;
+            }
         );
+
+        my $rule = Template::Refine::Processor::Rule->new(
+            selector    => $region_selector,
+            transformer => $replace,
+        );
+
+        $class_fragment = $class_fragment->process($rule);
     }
 
-    return $frag;
+    $class_fragment = $self->transform_class($class_fragment, $instance);
+
+    return $class_fragment;
 }
 
-sub _transform_attribute {
-    my ($self, $fragment, $attribute, $instance) = @_;
+sub _get_attribute_region {
+    my ($self, $attribute) = @_;
 
-    # maybe ignore instead of dying?
     confess "'@{[$attribute->name]}' cannot select a region"
       unless $attribute->metadescription->does('Ernst::Description::Trait::Region');
 
-    my $rule = Template::Refine::Processor::Rule->new(
-        selector    => $attribute->metadescription->selector_for($self->flavor),
-        transformer => $self->_make_replacer($attribute, $instance),
-    );
-
-    return $fragment->process($rule);
+    return $attribute->metadescription->selector_for($self->flavor);
 }
 
-sub _simple_replace {
-    my ($frag, $xpath, $type, $code) = @_;
-
-    $type = "Template::Refine::Processor::Rule::Transform::$type";
-    $type->require;
-
-    return $frag->process(
-        Template::Refine::Processor::Rule->new(
-            selector => Template::Refine::Processor::Rule::Select::XPath->new(
-                pattern => $xpath,
-            ),
-            transformer => $type->new(
-                replacement => $code,
-            ),
-        ),
-    );
+# hook this with around
+sub transform_attribute {
+    my ($self, $attribute, $fragment, $instance) = @_;
+    return $fragment;
 }
 
-sub _make_replacer {
-    my ($self, $attribute, $instance) = @_;
+# hook this with around
 
-    my $namespace = $self->namespace->recurse($attribute->name);
-
-    return Template::Refine::Processor::Rule::Transform::Replace->new(
-        replacement => sub {
-            my $md   = $attribute->metadescription;
-            my $node = shift;
-            my $frag = Template::Refine::Fragment->new_from_string(
-                $node->toString,
-            );
-
-            # add name to the input
-            $frag = _simple_replace(
-                $frag, '//input',
-                Replace =>
-                  sub {
-                      my $n = shift->cloneNode(1);
-                      $n->setAttribute( name => $namespace->to_string );
-                      return $n;
-                  },
-            );
-
-            # replace label
-            $frag = _simple_replace(
-                $frag, '//*[@class="label"]',
-                'Replace::WithText' => sub { $self->_label($attribute, $instance) }
-            );
-
-            # replace instructions
-            if($md->does('Ernst::Description::Trait::Friendly') &&
-                 (my $instructions = $md->instructions)){
-                $frag = _simple_replace(
-                    $frag, '//*[@class="instructions"]',
-                    'Replace::WithText' => sub { $instructions }
-                );
-            }
-
-            return $frag->fragment;
-        }
-    );
+sub transform_class {
+    my ($self, $fragment, $instance) = @_;
+    return $fragment;
 }
 
-sub _label {
-    my ($self, $attribute, $instance) = @_;
-    my $label = $attribute->name;
-    if($attribute->metadescription->does('Ernst::Description::Trait::Friendly')){
-        $label = $attribute->metadescription->label;
-    }
-    # move "text" like this out into a "style" class
-    $label .= '*' if $attribute->is_required;
-    return $label;
-}
-
-sub _instructions {
-    my ($self, $attribute, $instance) = @_;
-    return
-}
 
 1;
 

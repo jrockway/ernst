@@ -1,4 +1,4 @@
-package Ernst::Interpreter::TRForm::Namespace;
+package Ernst::Interpreter::TRForm::Namespace::Manager;
 use Moose;
 use Moose::Util::TypeConstraints;
 
