@@ -2,6 +2,13 @@ package Ernst::Interpreter::TRForm::Trait::Label;
 use Moose::Role;
 use Ernst::Interpreter::TRForm::Utils qw(simple_replace);
 
+has 'required_field_indicator' => (
+    is       => 'ro',
+    isa      => 'CodeRef',
+    default  => sub { sub { my $label = shift; return $label .= '*' } },
+    required => 1,
+);
+
 around transform_attribute => sub {
     my ($next, $self, $attribute, $fragment, $instance) = @_;
 
@@ -22,9 +29,8 @@ sub _label {
     if($attribute->metadescription->does('Ernst::Description::Trait::Friendly')){
         $label = $attribute->metadescription->label;
     }
-    # move "text" like this out into a "style" class
-    $label .= '*' if $attribute->is_required;
-    return $label;
+
+    return $self->required_field_indicator->($label) if $attribute->is_required;
 }
 
 1;
