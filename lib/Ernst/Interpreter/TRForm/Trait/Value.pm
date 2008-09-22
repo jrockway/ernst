@@ -31,7 +31,9 @@ around transform_attribute => sub {
                 if($type eq 'input'){
                     $copy->setAttribute( value => $value );
                 }
-
+                elsif($type eq 'img'){
+                    $copy->setAttribute( src => $value );
+                }
                 else {
                     $copy->removeChildNodes;
 
