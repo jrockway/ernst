@@ -34,7 +34,19 @@ around transform_attribute => sub {
 
                 else {
                     $copy->removeChildNodes;
-                    $copy->addChild( XML::LibXML::Text->new($value) );
+
+                    if( $attribute->metadescription->
+                          does('Ernst::Description::Trait::PassthroughHTML') &&
+                            $attribute->metadescription->pass_html ){
+
+                        my $v = Template::Refine::Fragment->new_from_string(
+                            $value,
+                        );
+                        $copy->addChild( $v->fragment );
+                    }
+                    else {
+                        $copy->addChild( XML::LibXML::Text->new($value) );
+                    }
                 }
 
                 return $copy;
