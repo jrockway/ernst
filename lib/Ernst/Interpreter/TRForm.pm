@@ -16,25 +16,23 @@ has 'class' => (
     required => 1,
 );
 
-has 'flavor' => (
-    is       => 'ro',
-    isa      => 'Str',
-    required => 1,
+# not a fan of this; but it lets us let catalyst load the HTML file (etc.)
+has 'representation' => (
+    is        => 'ro',
+    isa       => 'Str',
+    required  => 1,
 );
+
+sub _get_html_fragment {
+    my ($self) = @_;
+
+    return Template::Refine::Fragment->new_from_string($self->representation);
+}
 
 sub interpret {
     my ($self, $instance) = @_;
 
-    my $desc = $self->class->metadescription;
-
-    confess "$instance must consume the 'Representation' Ernst trait"
-      unless $desc->does('Ernst::Description::Trait::Representation');
-
-    my $flavor = $self->flavor;
-    my $template = $desc->representation_for($flavor) ||
-      confess "$instance does not contain a representation for the '$flavor' flavor";
-
-    my $class_fragment = Template::Refine::Fragment->new_from_string($template);
+    my $class_fragment = $self->_get_html_fragment;
 
     my @attributes = map { $self->class->get_attribute($_) }
       $self->class->metadescription->get_attribute_list;
@@ -77,7 +75,7 @@ sub _get_attribute_region {
     confess "'@{[$attribute->name]}' cannot select a region"
       unless $attribute->metadescription->does('Ernst::Description::Trait::Region');
 
-    return $attribute->metadescription->selector_for($self->flavor);
+    return $attribute->metadescription->region_selector;
 }
 
 # hook this with around
@@ -87,7 +85,6 @@ sub transform_attribute {
 }
 
 # hook this with around
-
 sub transform_class {
     my ($self, $fragment, $instance) = @_;
     return $fragment;

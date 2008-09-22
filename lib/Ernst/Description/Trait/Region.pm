@@ -1,23 +1,22 @@
 package Ernst::Description::Trait::Region;
 use Moose::Role;
-use MooseX::AttributeHelpers;
+use Template::Refine::Processor::Rule::Select::XPath;
 
 has 'region' => (
-    metaclass => 'Collection::ImmutableHash',
     is        => 'ro',
-    isa       => 'HashRef[Str]',
+    isa       => 'Str',
     required  => 1,
-    provides  => {
-        get => 'region_selector_for',
-    },
 );
 
-sub selector_for {
-    my ($self, $flavor) = @_;
-    require Template::Refine::Processor::Rule::Select::XPath;
+sub region_selector {
+    my $self = shift;
+    my $region = $self->region;
+
     return Template::Refine::Processor::Rule::Select::XPath->new(
-        pattern => $self->region_selector_for($flavor),
+        pattern => $region,
     );
 }
+
+# TODO: validate XPath syntax in BUILD
 
 1;
