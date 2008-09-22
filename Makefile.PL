@@ -4,6 +4,8 @@ name 'Ernst';
 all_from 'lib/Ernst.pm';
 
 requires 'Data::Thunk';
+requires 'DateTime';
+requires 'DateTime::Format::Strptime';
 requires 'List::MoreUtils';
 requires 'Module::Pluggable::Object';
 requires 'Moose' => '0.48';
