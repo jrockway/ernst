@@ -14,6 +14,11 @@ around transform_attribute => sub {
 
     my $value = eval { $attribute->get_value($instance) };
 
+    if( $attribute->metadescription->does('Ernst::Description::Trait::PostProcess') ){
+        local $_ = $value;
+        $value = $attribute->metadescription->postprocess->($value);
+    }
+
     if(defined $value){
         $fragment = simple_replace(
             $fragment,

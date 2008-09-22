@@ -27,12 +27,13 @@ my $html = q{
       traits      => ['MetaDescription'],
       required    => 1,
       description => {
-          traits             => [qw/Region Editable Friendly/],
+          traits             => [qw/Region Editable Friendly PostProcess/],
           editable           => 1,
           initially_editable => 1,
           label              => 'Test Field',
           instructions       => 'Fill in some test data here.',
           region             => q|//*[@id='test']|,
+          postprocess        => sub { "OH HAI, $_" },
       },
   );
 
@@ -110,7 +111,7 @@ chomp($exact = <<HERE);
       <div id="test">
         <p class="instructions">Fill in some test data here.</p>
         <span class="label">Test Field*</span>:
-        <input type="text" value="bar" name="test"/></div>
+        <input type="text" value="OH HAI, bar" name="test"/></div>
     </form>
 HERE
 
