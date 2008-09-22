@@ -18,7 +18,7 @@ around transform_attribute => sub {
 
     $fragment = simple_replace(
         $fragment,
-        '//input',
+        '//input | //textarea',
         Replace =>
           sub {
               my $n = shift->cloneNode(1);
