@@ -9,12 +9,19 @@ has 'required_field_indicator' => (
     required => 1,
 );
 
+has 'label_region' => (
+    is       => 'ro',
+    isa      => 'Str',
+    required => 1,
+    default  => sub { '//*[@class="label"]' },
+);
+
 around transform_attribute => sub {
     my ($next, $self, $attribute, $fragment, $instance) = @_;
 
     $fragment = simple_replace(
         $fragment,
-        '//*[@class="label"]',
+        $self->label_region,
         'Replace::WithText' => sub {
             my $n = shift;
             return $self->_label($attribute, $n->textContent);
@@ -31,6 +38,7 @@ sub _label {
     }
 
     return $self->required_field_indicator->($label) if $attribute->is_required;
+    return $label;
 }
 
 1;
