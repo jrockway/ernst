@@ -28,6 +28,7 @@ around transform_attribute => sub {
                 }
 
                 else {
+                    $copy->removeChildNodes;
                     $copy->addChild( XML::LibXML::Text->new($value) );
                 }
 
