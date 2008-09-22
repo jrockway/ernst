@@ -5,6 +5,7 @@ all_from 'lib/Ernst.pm';
 
 requires 'Data::Thunk';
 requires 'DateTime';
+requires 'DateTime::Format::DateParse';
 requires 'DateTime::Format::Strptime';
 requires 'List::MoreUtils';
 requires 'Module::Pluggable::Object';

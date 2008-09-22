@@ -1,11 +1,13 @@
 package Ernst::Description::DateTime;
 use Moose;
-use DateTime::Format::Strptime;
 use DateTime;
+use DateTime::Format::Strptime;
+use DateTime::Format::DateParse;
 
 extends 'Ernst::Description::Value';
 
-with 'Ernst::Description::Trait::PostProcess';
+with 'Ernst::Description::Trait::PostProcess',
+  'Ernst::Description::Trait::Transform';
 
 has 'format' => (
     is       => 'ro',
@@ -30,6 +32,20 @@ has '+postprocess' => (
     default => sub {
         my $self = shift;
         $mk_format->($self->format);
+    },
+);
+
+has '+transform_source' => (
+    lazy    => 1,
+    default => sub { [shift->name] },
+);
+
+has '+transform_rule' => (
+    lazy    => 1,
+    default => sub {
+        sub {
+            DateTime::Format::DateParse->parse_datetime($_[0]);
+        },
     },
 );
 
