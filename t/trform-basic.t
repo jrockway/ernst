@@ -5,27 +5,21 @@ use Test::Exception;
 
 use ok 'Ernst::Interpreter::TRForm';
 
+my $html = q{
+    <form>
+      <div id="attribute">
+          <span class="label">Attribute Label</span>: <input type="text">
+      </div>
+      <div id="test">
+        <p class="instructions">Lorem ipsum dolor (sit) amit.</p>
+        <span class="label">Field</span>:
+        <input type="text">
+      </div>
+    </form>
+};
+
 { package Class;
   use Ernst;
-
-  __PACKAGE__->meta->metadescription->apply_role(
-      'Ernst::Description::Trait::Representation', {
-          representations => {
-              test => q{
-                  <form>
-                    <div id="attribute">
-                        <span class="label">Attribute Label</span>: <input type="text">
-                    </div>
-                    <div id="test">
-                      <p class="instructions">Lorem ipsum dolor (sit) amit.</p>
-                      <span class="label">Field</span>:
-                      <input type="text">
-                    </div>
-                  </form>
-              },
-          },
-      },
-  );
 
   has 'test' => (
       is          => 'ro',
@@ -38,9 +32,7 @@ use ok 'Ernst::Interpreter::TRForm';
           initially_editable => 1,
           label              => 'Test Field',
           instructions       => 'Fill in some test data here.',
-          region             => {
-              test => q|//*[@id='test']|,
-          },
+          region             => q|//*[@id='test']|,
       },
   );
 
@@ -53,9 +45,7 @@ use ok 'Ernst::Interpreter::TRForm';
           traits             => [qw/Region Editable/],
           editable           => 1,
           initially_editable => 1,
-          region             => {
-              test => q|//*[@id='attribute']|,
-          },
+          region             => q|//*[@id='attribute']|,
       },
   );
 
@@ -65,10 +55,10 @@ my $md = Class->meta->metadescription;
 ok $md;
 
 my $i = Ernst::Interpreter::TRForm->new_with_traits(
-    traits    => [qw/Namespace Label Instructions/],
-    class     => Class->meta,
-    flavor    => 'test',
-    namespace => '',
+    traits         => [qw/Namespace Label Instructions/],
+    representation => $html,
+    class          => Class->meta,
+    namespace      => '',
 );
 ok $i;
 
@@ -85,13 +75,13 @@ like $result, qr/Fill in some test data here[.]/, 'field instructions added';
 
 chomp(my $exact = <<HERE);
 <form>
-                    <div id="attribute">
-                        <span class="label">Attribute Label*</span>: <input type="text" name="attribute"/></div>
-                    <div id="test">
-                      <p class="instructions">Fill in some test data here.</p>
-                      <span class="label">Test Field*</span>:
-                      <input type="text" name="test"/></div>
-                  </form>
+      <div id="attribute">
+          <span class="label">Attribute Label*</span>: <input type="text" name="attribute"/></div>
+      <div id="test">
+        <p class="instructions">Fill in some test data here.</p>
+        <span class="label">Test Field*</span>:
+        <input type="text" name="test"/></div>
+    </form>
 HERE
 
 is $result, $exact, 'got exact expected HTML';
