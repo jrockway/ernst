@@ -20,6 +20,7 @@ my $html = q{
 
 { package Class;
   use Ernst;
+  use Template::Refine;
 
   has 'test' => (
       is          => 'ro',
@@ -32,7 +33,7 @@ my $html = q{
           initially_editable => 1,
           label              => 'Test Field',
           instructions       => 'Fill in some test data here.',
-          region             => q|//*[@id='test']|,
+          region             => css('#test'),
           postprocess        => sub { "OH HAI, $_" },
       },
   );
@@ -46,7 +47,7 @@ my $html = q{
           traits             => [qw/Region Editable/],
           editable           => 1,
           initially_editable => 1,
-          region             => q|//*[@id='attribute']|,
+          region             => xpath('//*[@id="attribute"]'),
       },
   );
 

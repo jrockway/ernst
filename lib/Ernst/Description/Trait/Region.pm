@@ -1,22 +1,16 @@
 package Ernst::Description::Trait::Region;
 use Moose::Role;
-use Template::Refine::Processor::Rule::Select::XPath;
+use Template::Refine::Processor::Rule::Select;
 
 has 'region' => (
     is        => 'ro',
-    isa       => 'Str',
+    does      => 'Template::Refine::Processor::Rule::Select',
     required  => 1,
 );
 
 sub region_selector {
     my $self = shift;
-    my $region = $self->region;
-
-    return Template::Refine::Processor::Rule::Select::XPath->new(
-        pattern => $region,
-    );
+    return $self->region;
 }
-
-# TODO: validate XPath syntax in BUILD
 
 1;
