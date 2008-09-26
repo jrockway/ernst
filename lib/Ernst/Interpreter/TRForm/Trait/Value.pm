@@ -1,6 +1,5 @@
 package Ernst::Interpreter::TRForm::Trait::Value;
 use Moose::Role;
-use Scalar::Util qw(reftype);
 use Ernst::Interpreter::TRForm::Utils qw(simple_replace);
 
 has 'value_replacement_region' => (
@@ -13,7 +12,10 @@ has 'value_replacement_region' => (
 around transform_attribute => sub {
     my ($next, $self, $attribute, $fragment, $instance) = @_;
 
-    my $value = eval { $attribute->get_value($instance) };
+    my $value = eval {
+        return $attribute->get_value($instance) if eval { $instance->meta };
+        return $instance->{$attribute->name}; # for partial objects
+    };
 
     if( $attribute->metadescription->does('Ernst::Description::Trait::PostProcess') ){
         local $_ = $value;
