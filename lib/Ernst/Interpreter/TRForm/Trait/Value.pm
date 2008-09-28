@@ -1,5 +1,6 @@
 package Ernst::Interpreter::TRForm::Trait::Value;
 use Moose::Role;
+use Scalar::Util qw(blessed reftype);
 use Ernst::Interpreter::TRForm::Utils qw(simple_replace);
 
 has 'value_replacement_region' => (
