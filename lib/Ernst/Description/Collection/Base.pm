@@ -5,7 +5,7 @@ use Ernst::Meta::Attribute;
 use Ernst::Util;
 
 subtype InsideType
-  => as 'Class',
+  => as 'Any', # XXX: this used to be Class, which is not a valid type. investigate.
   => where {
       $_->isa('Ernst::Description');
   };
