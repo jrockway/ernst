@@ -24,12 +24,26 @@ around transform_attribute => sub {
     }
 
     if(defined $value){
-        $fragment = $self->_replace_one_value(
-            $self->value_replacement_region,
-            $fragment,
-            $attribute->metadescription,
-            $value,
-        );
+        my $region = $self->value_replacement_region;
+        if(ref $value && reftype($value) eq 'ARRAY'){
+            my @array = @$value;
+            for(my $i = 1; $i <= @array; $i++){
+                $fragment = $self->_replace_one_value(
+                    "($region)[$i]",
+                    $fragment,
+                    $attribute->metadescription,
+                    $array[$i-1],
+                );
+            }
+        }
+        else {
+            $fragment = $self->_replace_one_value(
+                $self->value_replacement_region,
+                $fragment,
+                $attribute->metadescription,
+                $value,
+            );
+        }
     }
 
     return $self->$next($attribute, $fragment, $instance);
