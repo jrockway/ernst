@@ -24,62 +24,72 @@ around transform_attribute => sub {
     }
 
     if(defined $value){
-        $fragment = simple_replace(
-            $fragment,
+        $fragment = $self->_replace_one_value(
             $self->value_replacement_region,
-            'Replace' => sub {
-                my $n = shift;
-                my $copy = $n->cloneNode(1);
-                my $type = $n->nodeName;
-
-                # this lets us control element attributes + #text content
-                if(ref $value && reftype($value) eq 'HASH' && exists $value->{$type}){
-                    my $control = $value->{$type};
-                    confess 'ref "value" must be a HashRef[HashRef[Str]'
-                      unless reftype $control eq 'HASH';
-
-                    # replace text (node-specific, or general)
-                    my $text = delete $control->{'#text'};
-                    $text = $value->{'#text'} unless defined $text;
-
-                    $copy = _textize($copy, $attribute, $text) if $text;
-
-                    # now add attributes specific to this node type
-                    for my $attribute (keys %{$value->{$type}}){
-                        $copy->setAttribute( $attribute => $control->{$attribute} );
-                    }
-                }
-
-                # some HTML elements put "text" in weird places
-                elsif($type eq 'input'){
-                    $copy->setAttribute( value => $value );
-                }
-                elsif($type eq 'img'){
-                    $copy->setAttribute( src => $value );
-                }
-
-                # normal ones just make "text" their children
-                else {
-                     $value = $value->{'#text'}
-                      if ref $value && reftype($value) eq 'HASH';
-                    $copy = _textize($copy, $attribute, $value);
-                }
-
-                return $copy;
-            },
+            $fragment,
+            $attribute->metadescription,
+            $value,
         );
     }
 
     return $self->$next($attribute, $fragment, $instance);
 };
 
+sub _replace_one_value {
+    my ($self, $region, $fragment, $attribute_desc, $value) = @_;
+    return simple_replace(
+        $fragment,
+        $region,
+        'Replace' => sub {
+            my $n = shift;
+            my $copy = $n->cloneNode(1);
+            my $type = $n->nodeName;
+
+            # this lets us control element attributes + #text content
+            if(ref $value && reftype($value) eq 'HASH' && exists $value->{$type}){
+                my $control = $value->{$type};
+                confess 'ref "value" must be a HashRef[HashRef[Str]'
+                  unless reftype $control eq 'HASH';
+
+                # replace text (node-specific, or general)
+                my $text = delete $control->{'#text'};
+                $text = $value->{'#text'} unless defined $text;
+
+                $copy = _textize($copy, $attribute_desc, $text) if $text;
+
+                # now add attributes specific to this node type
+                for my $attribute (keys %{$value->{$type}}){
+                    $copy->setAttribute( $attribute => $control->{$attribute} );
+                }
+            }
+
+            # some HTML elements put "text" in weird places
+            elsif($type eq 'input'){
+                $copy->setAttribute( value => $value );
+            }
+            elsif($type eq 'img'){
+                $copy->setAttribute( src => $value );
+            }
+
+            # normal ones just make "text" their children
+            else {
+                $value = $value->{'#text'}
+                  if ref $value && reftype($value) eq 'HASH';
+                $copy = _textize($copy, $attribute_desc, $value);
+            }
+
+            return $copy;
+        },
+    );
+}
+
 sub _textize {
-    my ($node, $attribute, $value) = @_;
+    my ($node, $attribute_desc, $value) = @_;
     $node->removeChildNodes;
 
-    if( $attribute->metadescription->
-          does('Ernst::Description::Trait::PassthroughHTML') &&
-            $attribute->metadescription->pass_html ){
+    if( $attribute_desc->does('Ernst::Description::Trait::PassthroughHTML') &&
+        $attribute_desc->pass_html
+    ) {
 
         my $v = Template::Refine::Fragment->new_from_string(
             $value,
